@@ -1,12 +1,17 @@
 export const rollDice = (count, sides) => {
+    const c = Math.max(0, parseInt(count, 10) || 0);
+    const s = Math.max(0, parseInt(sides, 10) || 0);
+    if (c === 0 || s === 0) return 0;
     let total = 0;
-    for(let i = 0; i < count; i++) total += Math.floor(Math.random() * sides) + 1;
+    for (let i = 0; i < c; i++) {
+        total += Math.floor(Math.random() * s) + 1;
+    }
     return total;
 };
 
 export const parseCR = (crValue) => {
-    if (!crValue) return 0;
-    const crStr = String(crValue).trim();
+    if (crValue === null || crValue === undefined || crValue === '') return 0;
+    const crStr = String(crValue).trim().split(' ')[0];
     if (crStr.includes('/')) {
         const [num, den] = crStr.split('/');
         return (parseFloat(num) || 0) / (parseFloat(den) || 1);
@@ -30,7 +35,10 @@ export const safeText = (val) => {
 };
 
 export const getDeepStat = (monster, statName) => {
-    const keys = [statName, statName.substring(0,3), `${statName}_score`];
+    if (!monster || typeof monster !== 'object' || !statName) return null;
+    const cleanStat = String(statName);
+    const shortStat = cleanStat.substring(0, 3);
+    const keys = [cleanStat, shortStat, `${cleanStat}_score`, `${shortStat}_score`];
     const extractFirstNumber = (val) => {
         if (val === null || val === undefined) return null;
         const textVal = String(safeText(val));
@@ -43,7 +51,7 @@ export const getDeepStat = (monster, statName) => {
             if (num !== null) return num;
         }
     }
-    if (monster.ability_scores) {
+    if (monster.ability_scores && typeof monster.ability_scores === 'object') {
         for (const key of keys) {
             if (monster.ability_scores[key] !== undefined && monster.ability_scores[key] !== null) {
                 const num = extractFirstNumber(monster.ability_scores[key]);

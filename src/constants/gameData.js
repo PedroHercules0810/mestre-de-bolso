@@ -26,18 +26,21 @@ export const CR_TO_XP = {
     "5": 1800, "6": 2300, "7": 2900, "8": 3900, "9": 5000, "10": 5900, "11": 7200, 
     "12": 8400, "13": 10000, "14": 11500, "15": 13000, "16": 15000, "17": 18000, 
     "18": 20000, "19": 22000, "20": 25000, "21": 33000, "22": 41000, "23": 50000, 
-    "24": 62000, "25": 75000, "30": 155000
+    "24": 62000, "25": 75000, "26": 90000, "27": 105000, "28": 120000, "29": 135000, "30": 155000
 };
 
 export const CONDITIONS = [
     { id: 'blinded', label: 'Blinded/Cego', color: 'bg-slate-700' },
     { id: 'charmed', label: 'Charmed/Enfeitiçado', color: 'bg-pink-600' },
+    { id: 'concentration', label: 'Concentration/Concentração', color: 'bg-indigo-600' },
     { id: 'deafened', label: 'Deafened/Surdo', color: 'bg-stone-500' },
     { id: 'exhaustion', label: 'Exhaustion/Exaustão', color: 'bg-zinc-600' },
     { id: 'frightened', label: 'Frightened/Amedrontado', color: 'bg-purple-600' },
     { id: 'grappled', label: 'Grappled/Agarrado', color: 'bg-orange-500' },
+    { id: 'incapacitated', label: 'Incapacitated/Incapacitado', color: 'bg-rose-700' },
     { id: 'invisible', label: 'Invisible/Invisível', color: 'bg-cyan-600' },
     { id: 'paralyzed', label: 'Paralyzed/Paralisado', color: 'bg-teal-600' },
+    { id: 'petrified', label: 'Petrified/Petrificado', color: 'bg-stone-700' },
     { id: 'poisoned', label: 'Poisoned/Envenenado', color: 'bg-green-600' },
     { id: 'prone', label: 'Prone/Caído', color: 'bg-amber-700' },
     { id: 'restrained', label: 'Restrained/Impedido', color: 'bg-orange-600' },

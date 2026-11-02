@@ -115,25 +115,21 @@ export const AppProvider = ({ children }) => {
     let totalSaved = 0;
     
     const fetchPageAndSave = async (fetchUrl, storeName) => {
-        try {
-            addLog(`Baixando...`);
-            const response = await fetch(fetchUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            
-            if (data.results && data.results.length > 0) {
-                let itemsToSave = data.results;
-                if(storeName === STORE_ITEMS) {
-                     itemsToSave = itemsToSave.map(i => ({...i, open5e_category: type}));
-                }
-                const savedCount = await saveDataToDB(storeName, itemsToSave);
-                totalSaved += savedCount;
-                addLog(`Sucesso: ${totalSaved} registros salvos.`);
+        addLog(`Baixando...`);
+        const response = await fetch(fetchUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        
+        if (data.results && data.results.length > 0) {
+            let itemsToSave = data.results;
+            if(storeName === STORE_ITEMS) {
+                 itemsToSave = itemsToSave.map(i => ({...i, open5e_category: type}));
             }
-            return data.next;
-        } catch (error) {
-            throw error;
+            const savedCount = await saveDataToDB(storeName, itemsToSave);
+            totalSaved += savedCount;
+            addLog(`Sucesso: ${totalSaved} registros salvos.`);
         }
+        return data.next;
     };
 
     try {
@@ -262,20 +258,19 @@ export const AppProvider = ({ children }) => {
   };
 
   const addMonsterToEncounter = (monster) => {
+    const monsterXp = Number(monster.xp) || 0;
     setEncounter(prev => {
         const current = prev || { budget: 0, totalXP: 0, monsters: [], loot: null };
         const existingIdx = current.monsters.findIndex(m => m.slug === monster.slug);
-        let newMonsters = [...current.monsters];
+        const newMonsters = current.monsters.map((m, idx) =>
+            idx === existingIdx ? { ...m, count: (Number(m.count) || 1) + 1 } : { ...m }
+        );
         
-        if(existingIdx >= 0) {
-            newMonsters[existingIdx].count += 1;
-        } else {
-            newMonsters.push({...monster, count: 1, isBoss: false});
+        if (existingIdx < 0) {
+            newMonsters.push({ ...monster, xp: monsterXp, count: 1, isBoss: false });
         }
         
-        const newTotalXP = current.totalXP + monster.xp;
-        showToast(`${translateName(safeText(monster.name), lang)} ${t.addedToEncounter}`);
-        
+        const newTotalXP = (Number(current.totalXP) || 0) + monsterXp;
         return { 
             ...current, 
             totalXP: newTotalXP, 
@@ -283,22 +278,23 @@ export const AppProvider = ({ children }) => {
             loot: generateEncounterLoot(newMonsters, items, lang)
         };
     });
+    showToast(`${translateName(safeText(monster.name), lang)} ${t.addedToEncounter}`);
   };
 
   const updateMonsterCount = (slug, delta) => {
     if (!encounter) return;
-    let newMonsters = [...encounter.monsters];
-    const idx = newMonsters.findIndex(m => m.slug === slug);
+    const idx = encounter.monsters.findIndex(m => m.slug === slug);
     if (idx === -1) return;
 
-    const monsterXP = newMonsters[idx].xp;
-    newMonsters[idx].count += delta;
+    const targetMonster = encounter.monsters[idx];
+    const monsterXP = Number(targetMonster.xp) || 0;
+    const updatedCount = (Number(targetMonster.count) || 1) + delta;
     
-    let newTotalXP = encounter.totalXP + (delta * monsterXP);
-
-    if (newMonsters[idx].count <= 0) {
-        newMonsters.splice(idx, 1);
-    }
+    const newMonsters = encounter.monsters
+        .map((m, i) => i === idx ? { ...m, count: updatedCount } : { ...m })
+        .filter(m => m.count > 0);
+    
+    const newTotalXP = Math.max(0, (Number(encounter.totalXP) || 0) + (delta * monsterXP));
 
     setEncounter({ 
         ...encounter, 

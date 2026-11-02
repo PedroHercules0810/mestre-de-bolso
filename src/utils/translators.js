@@ -873,7 +873,7 @@ const TERM_DICT = {
     "ranged weapon": "Arma à Distância", "martial weapon": "Arma Marcial",
     "simple weapon": "Arma Simples", "light armor": "Armadura Leve",
     "medium armor": "Armadura Média", "heavy armor": "Armadura Pesada",
-    "adventuring gear": "Equipamento de Aventura", "ammunition": "Munição",
+    "adventuring gear": "Equipamento de Aventura",
     "tool": "Ferramenta", "mount": "Montaria", "vehicle": "Veículo"
 };
 

@@ -62,7 +62,7 @@ export const HomeScreen = ({ onNavigate }) => {
                 <label className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{t.budgetAdj}</label>
                 <span className="text-[#FF1457] font-bold">{budgetMult}%</span>
             </div>
-            <input type="range" min="50" max="300" step="10" value={budgetMult} onChange={(e) => setBudgetMult(e.target.value)}
+            <input type="range" min="50" max="300" step="10" value={budgetMult} onChange={(e) => setBudgetMult(Number(e.target.value))}
                 className="w-full h-2 bg-[#453745] rounded-lg appearance-none cursor-pointer accent-[#FF1457]" />
             <div className="flex justify-between mt-1 text-xs text-gray-500">
                 <span>{currentBudget} XP</span>

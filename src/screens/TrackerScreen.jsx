@@ -24,8 +24,10 @@ export const TrackerScreen = () => {
     };
 
     const updateHp = (idx, delta) => {
-        const newTracker = [...tracker];
-        newTracker[idx].hp = Math.max(0, newTracker[idx].hp + delta);
+        if (idx < 0 || idx >= tracker.length) return;
+        const newTracker = tracker.map((item, i) =>
+            i === idx ? { ...item, hp: Math.max(0, (parseInt(item.hp, 10) || 0) + delta) } : item
+        );
         setTracker(newTracker);
     };
 
@@ -74,9 +76,16 @@ export const TrackerScreen = () => {
     };
 
     const removeEntity = (id) => {
+        const removedIdx = tracker.findIndex(e => e.id === id);
         const newTracker = tracker.filter(e => e.id !== id);
         setTracker(newTracker);
-        if (currentTurn >= newTracker.length) setCurrentTurn(0);
+        if (newTracker.length === 0) {
+            setCurrentTurn(-1);
+        } else if (removedIdx !== -1 && removedIdx < currentTurn) {
+            setCurrentTurn(c => Math.max(0, c - 1));
+        } else if (currentTurn >= newTracker.length) {
+            setCurrentTurn(0);
+        }
     };
 
     const handleHpChange = (id, value) => {

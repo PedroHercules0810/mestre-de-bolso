@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { initDB, STORE_TRANSLATIONS, getAllDataFromDB } from './db';
 import {
     translateName,
-    translateTerm,
     translateDescription,
     registerDynamicTranslationGetter
 } from '../utils/translators';
@@ -79,7 +78,6 @@ const fetchNeuralTranslation = async (rawText) => {
     const clean = String(rawText).trim();
     if (!clean) return clean;
 
-    // Provedor 1: Google Translate GTX (Rápido, suporta textos longos e pontuação de RPG)
     try {
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=${encodeURIComponent(clean)}`;
         const res = await fetch(url);
@@ -94,7 +92,6 @@ const fetchNeuralTranslation = async (rawText) => {
         // Continua para o fallback
     }
 
-    // Provedor 2: MyMemory Translation API (Fallback gratuito)
     if (clean.length <= 480) {
         try {
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|pt-br`;
@@ -150,47 +147,63 @@ export const translateTextNeural = async (text, prefix = 'desc') => {
 export const useSmartDescription = (text, lang) => {
     const clean = text ? String(text).trim() : '';
     const cacheKey = `desc:${clean}`;
-    const [translated, setTranslated] = useState(() => {
-        if (lang !== 'pt' || !clean) return clean;
-        return memoryCache.get(cacheKey) || translateDescription(clean, 'pt');
-    });
-    const [isNeural, setIsNeural] = useState(() => memoryCache.has(cacheKey));
+    const [, setTick] = useState(0);
 
     useEffect(() => {
-        if (lang !== 'pt' || !clean) {
-            setTranslated(clean);
-            setIsNeural(false);
+        if (lang !== 'pt' || !clean || memoryCache.has(cacheKey)) {
             return;
         }
-
-        if (memoryCache.has(cacheKey)) {
-            setTranslated(memoryCache.get(cacheKey));
-            setIsNeural(true);
-            return;
-        }
-
-        // Mostra imediatamente a tradução mecânica D&D offline
-        setTranslated(translateDescription(clean, 'pt'));
-        setIsNeural(false);
-
         let active = true;
-        translateTextNeural(clean, 'desc').then((res) => {
-            if (active && res) {
-                setTranslated(res);
-                setIsNeural(memoryCache.has(cacheKey));
-            }
+        translateTextNeural(clean, 'desc').then(() => {
+            if (active) setTick(t => t + 1);
         });
-
         return () => { active = false; };
     }, [clean, lang, cacheKey]);
 
-    return { text: translated, isNeural };
+    if (lang !== 'pt' || !clean) {
+        return { text: clean, isNeural: false };
+    }
+    const isNeural = memoryCache.has(cacheKey);
+    const resolvedText = isNeural ? memoryCache.get(cacheKey) : translateDescription(clean, 'pt');
+    return { text: resolvedText, isNeural };
+};
+
+// Coleta textos pendentes de tradução neural para um monstro
+const getPendingMonsterTexts = (monster, lang) => {
+    if (lang !== 'pt' || !monster) return [];
+    const textsToTranslate = [];
+    const rawName = String(monster.name || '').trim();
+    if (rawName && translateName(rawName, 'pt').toLowerCase() === rawName.toLowerCase() && !memoryCache.has(`name:${rawName.toLowerCase()}`)) {
+        textsToTranslate.push({ text: rawName, prefix: 'name' });
+    }
+
+    const collectFromList = (list) => {
+        if (!Array.isArray(list)) return;
+        list.forEach(item => {
+            if (item && item.desc) {
+                const d = String(item.desc).trim();
+                if (d && !memoryCache.has(`desc:${d}`)) {
+                    textsToTranslate.push({ text: d, prefix: 'desc' });
+                }
+            }
+        });
+    };
+
+    collectFromList(monster.special_abilities);
+    collectFromList(monster.traits);
+    collectFromList(monster.actions);
+    collectFromList(monster.bonus_actions);
+    collectFromList(monster.reactions);
+    collectFromList(monster.legendary_actions);
+    collectFromList(monster.mythic_actions);
+
+    return textsToTranslate;
 };
 
 // Hook que traduz sob demanda todas as habilidades e ações de um Monstro aberto no StatBlock
 export const useMonsterNeuralTranslation = (monster, lang) => {
     const [, setTick] = useState(0);
-    const [isTranslating, setIsTranslating] = useState(false);
+    const pendingList = getPendingMonsterTexts(monster, lang);
 
     useEffect(() => {
         if (lang !== 'pt' || !monster) return;
@@ -198,45 +211,15 @@ export const useMonsterNeuralTranslation = (monster, lang) => {
         const sub = () => setTick(t => t + 1);
         listeners.add(sub);
 
-        const textsToTranslate = [];
-
-        // Se o nome não foi traduzido pelo dicionário offline, fila para tradução neural
-        const rawName = String(monster.name || '').trim();
-        if (rawName && translateName(rawName, 'pt').toLowerCase() === rawName.toLowerCase() && !memoryCache.has(`name:${rawName.toLowerCase()}`)) {
-            textsToTranslate.push({ text: rawName, prefix: 'name' });
-        }
-
-        const collectFromList = (list) => {
-            if (!Array.isArray(list)) return;
-            list.forEach(item => {
-                if (!item) return;
-                if (item.desc) {
-                    const d = String(item.desc).trim();
-                    if (d && !memoryCache.has(`desc:${d}`)) {
-                        textsToTranslate.push({ text: d, prefix: 'desc' });
-                    }
-                }
-            });
-        };
-
-        collectFromList(monster.special_abilities);
-        collectFromList(monster.traits);
-        collectFromList(monster.actions);
-        collectFromList(monster.bonus_actions);
-        collectFromList(monster.reactions);
-        collectFromList(monster.legendary_actions);
-        collectFromList(monster.mythic_actions);
-
+        const toFetch = getPendingMonsterTexts(monster, lang);
         let cancelled = false;
-        if (textsToTranslate.length > 0) {
-            setIsTranslating(true);
+        if (toFetch.length > 0) {
             (async () => {
-                for (const entry of textsToTranslate) {
+                for (const entry of toFetch) {
                     if (cancelled) break;
                     await translateTextNeural(entry.text, entry.prefix);
                 }
                 if (!cancelled) {
-                    setIsTranslating(false);
                     setTick(t => t + 1);
                 }
             })();
@@ -248,7 +231,7 @@ export const useMonsterNeuralTranslation = (monster, lang) => {
         };
     }, [monster, lang]);
 
-    return { isTranslating, cacheCount: memoryCache.size };
+    return { isTranslating: pendingList.length > 0, cacheCount: memoryCache.size };
 };
 
 export const getTranslationCacheStats = () => ({
