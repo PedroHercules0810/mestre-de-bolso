@@ -1,7 +1,8 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { DICTIONARY } from '../constants/dictionary';
 import { XP_BUDGET_5E } from '../constants/gameData';
-import { STORE_MONSTERS, STORE_ITEMS, saveDataToDB, getAllDataFromDB } from '../services/db';
+import { STORE_MONSTERS, STORE_ITEMS, saveDataToDB, getAllDataFromDB, deleteDataFromDB } from '../services/db';
+import { initTranslationCache } from '../services/translatorService';
 import { safeText, getDeepStat } from '../utils/helpers';
 import { translateName } from '../utils/translators';
 import { generateEncounterLoot } from '../utils/lootGenerator';
@@ -32,6 +33,24 @@ export const AppProvider = ({ children }) => {
       return [];
     }
   });
+  const [homebrewMonsters, setHomebrewMonsters] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_homebrew_monsters');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to load homebrew monsters", e);
+      return [];
+    }
+  });
+  const [homebrewItems, setHomebrewItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_homebrew_items');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to load homebrew items", e);
+      return [];
+    }
+  });
 
   useEffect(() => {
     try {
@@ -40,6 +59,22 @@ export const AppProvider = ({ children }) => {
       console.error("Failed to save campaigns", e);
     }
   }, [campaigns]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_homebrew_monsters', JSON.stringify(homebrewMonsters));
+    } catch (e) {
+      console.error("Failed to save homebrew monsters", e);
+    }
+  }, [homebrewMonsters]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_homebrew_items', JSON.stringify(homebrewItems));
+    } catch (e) {
+      console.error("Failed to save homebrew items", e);
+    }
+  }, [homebrewItems]);
   
   const [debugLogs, setDebugLogs] = useState(["[SISTEMA] Aguardando ações..."]);
   const t = DICTIONARY[lang];
@@ -57,6 +92,7 @@ export const AppProvider = ({ children }) => {
 
   const loadCache = async () => {
     try {
+      const transCount = await initTranslationCache();
       const monsterData = await getAllDataFromDB(STORE_MONSTERS);
       const sortedMonsters = monsterData.sort((a, b) => (safeText(a.name) > safeText(b.name)) ? 1 : -1);
       setMonsters(sortedMonsters);
@@ -65,7 +101,7 @@ export const AppProvider = ({ children }) => {
       const sortedItems = itemData.sort((a, b) => (safeText(a.name) > safeText(b.name)) ? 1 : -1);
       setItems(sortedItems);
 
-      addLog(`Cache carregado: ${sortedMonsters.length} monstros, ${sortedItems.length} itens.`);
+      addLog(`Cache carregado: ${sortedMonsters.length} monstros, ${sortedItems.length} itens, ${transCount} traduções.`);
     } catch (e) {
       console.error("Cache Error:", e);
       addLog("Erro crítico ao carregar cache local.");
@@ -369,6 +405,60 @@ export const AppProvider = ({ children }) => {
       if(currentTurn === -1) setCurrentTurn(0);
   };
 
+  const sendHomebrewToBestiary = async (monsterObj) => {
+      try {
+          const toSave = { ...monsterObj, isHomebrew: true };
+          await saveDataToDB(STORE_MONSTERS, [toSave]);
+          await loadCache();
+          showToast(`${safeText(monsterObj.name)} ${t.sentToBestiaryToast}`);
+          return true;
+      } catch (e) {
+          console.error("Error sending homebrew to bestiary", e);
+          return false;
+      }
+  };
+
+  const removeMonsterFromBestiary = async (slug, monsterName = "") => {
+      try {
+          await deleteDataFromDB(STORE_MONSTERS, slug);
+          await loadCache();
+          if (monsterName) {
+              showToast(`${safeText(monsterName)} ${t.removedFromBestiaryToast}`);
+          }
+          return true;
+      } catch (e) {
+          console.error("Error removing monster from bestiary", e);
+          return false;
+      }
+  };
+
+  const sendHomebrewToItems = async (itemObj) => {
+      try {
+          const toSave = { ...itemObj, isHomebrew: true };
+          await saveDataToDB(STORE_ITEMS, [toSave]);
+          await loadCache();
+          showToast(`${safeText(itemObj.name)} ${t.sentToCompendiumToast}`);
+          return true;
+      } catch (e) {
+          console.error("Error sending homebrew item to compendium", e);
+          return false;
+      }
+  };
+
+  const removeItemFromCompendium = async (slug, itemName = "") => {
+      try {
+          await deleteDataFromDB(STORE_ITEMS, slug);
+          await loadCache();
+          if (itemName) {
+              showToast(`${safeText(itemName)} ${t.removedFromCompendiumToast}`);
+          }
+          return true;
+      } catch (e) {
+          console.error("Error removing item from compendium", e);
+          return false;
+      }
+  };
+
   return (
     <AppContext.Provider value={{
       lang, setLang, t, monsters, items, syncData, isSyncing, debugLogs, addLog,
@@ -376,7 +466,10 @@ export const AppProvider = ({ children }) => {
       addMonsterToEncounter, updateMonsterCount, addDirectlyToTracker,
       tracker, setTracker, addToTracker, currentTurn, setCurrentTurn, round, setRound,
       toastMsg, setToastMsg, itemsTab, setItemsTab,
-      campaigns, setCampaigns, addEncounterToCampaign, showToast
+      campaigns, setCampaigns, addEncounterToCampaign,
+      homebrewMonsters, setHomebrewMonsters, sendHomebrewToBestiary, removeMonsterFromBestiary,
+      homebrewItems, setHomebrewItems, sendHomebrewToItems, removeItemFromCompendium,
+      showToast
     }}>
       {children}
     </AppContext.Provider>

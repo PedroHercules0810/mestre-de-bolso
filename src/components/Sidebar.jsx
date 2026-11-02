@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Skull, Book, Dices, Swords, Package, Search, Gem, Shield, 
-  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight 
+  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight, Sparkles 
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
@@ -37,6 +37,7 @@ export const Sidebar = ({ isOpen, onClose, onNavigate, currentRoute, t, lang }) 
             id: 'dm', label: lang === 'pt' ? 'Mestre (DM)' : 'Dungeon Master', icon: Shield,
             sub: [
                 { id: 'campaigns', label: t.campaigns, icon: ScrollText },
+                { id: 'homebrew', label: t.homebrew, icon: Sparkles },
                 { id: 'tracker', label: t.tracker, icon: Shield },
                 { id: 'library', label: t.library, icon: BookOpen }
             ]

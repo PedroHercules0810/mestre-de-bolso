@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Book, Gem, Search, X, ArrowRight, Sparkles, Coins, Package } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { safeText } from '../utils/helpers';
-import { translateName, translateTerm } from '../utils/translators';
+import { translateName, translateTerm, matchesBilingualSearch } from '../utils/translators';
 import { generateAdvancedLoot } from '../utils/lootGenerator';
 import { renderItemDetails } from '../components/ItemDetails';
 
@@ -28,7 +28,7 @@ export const ItemsScreen = () => {
     ];
 
     const filteredItems = items.filter(i => {
-        const matchesSearch = safeText(i.name).toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = matchesBilingualSearch(safeText(i.name), searchTerm);
         
         let matchesType = true;
         if (typeFilter !== 'Any') {
@@ -99,7 +99,14 @@ export const ItemsScreen = () => {
                                         onClick={() => setExpanded({ ...expanded, [item.slug]: !expanded[item.slug] })}
                                     >
                                         <div>
-                                            <h4 className="font-bold text-white leading-tight">{translateName(safeText(item.name), lang)}</h4>
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="font-bold text-white leading-tight">{translateName(safeText(item.name), lang)}</h4>
+                                                {item.isHomebrew && (
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider bg-[#FF1457]/20 text-[#FF1457] px-2 py-0.5 rounded-full border border-[#FF1457]/40">
+                                                        Homebrew
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-gray-400 capitalize">
                                                 {translateTerm(safeText(item.rarity) || safeText(item.equipment_category) || safeText(item.type), lang)}
                                             </p>

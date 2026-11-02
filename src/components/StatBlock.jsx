@@ -1,8 +1,19 @@
 import React from 'react';
+import { Sparkles, Loader2 } from 'lucide-react';
 import { safeText, getDeepStat } from '../utils/helpers';
-import { translateName, translateTerm } from '../utils/translators';
+import {
+    translateName,
+    translateTerm,
+    translateDescription,
+    translateSavesObject,
+    translateSkillsObject,
+    translateCommaList
+} from '../utils/translators';
+import { useMonsterNeuralTranslation } from '../services/translatorService';
 
 export const StatBlock = ({ monster, lang }) => {
+  const { isTranslating } = useMonsterNeuralTranslation(monster, lang);
+
   const getMod = (score) => {
       if (score === null || isNaN(score)) return "N/A";
       const mod = Math.floor((score - 10) / 2);
@@ -87,7 +98,8 @@ export const StatBlock = ({ monster, lang }) => {
 
   const formatRichDesc = (text) => {
       if (!text) return null;
-      const lines = safeText(text).split('\n');
+      const translatedText = translateDescription(safeText(text), lang);
+      const lines = translatedText.split('\n');
       return lines.map((line, i) => (
           <React.Fragment key={i}>
               {line.replace(/\*\*/g, '')}
@@ -126,39 +138,51 @@ export const StatBlock = ({ monster, lang }) => {
       );
   };
 
-  const savesText = monster.saving_throws && typeof monster.saving_throws === 'object'
-      ? Object.entries(monster.saving_throws)
-          .filter(([, val]) => val !== null && val !== undefined)
-          .map(([k, val]) => `${k.substring(0, 3).toUpperCase()} ${val >= 0 ? `+${val}` : val}`)
-          .join(', ')
-      : '';
+  const savesText = translateSavesObject(monster.saving_throws, lang);
+  const skillsText = translateSkillsObject(monster.skill_bonuses, lang);
 
-  const skillsText = monster.skill_bonuses && typeof monster.skill_bonuses === 'object'
-      ? Object.entries(monster.skill_bonuses)
-          .filter(([, val]) => val !== null && val !== undefined)
-          .map(([k, val]) => `${k.replace(/_/g, ' ')} ${val >= 0 ? `+${val}` : val}`)
-          .join(', ')
-      : '';
+  const rawImmunities = monster.resistances_and_immunities?.damage_immunities_display || safeText(monster.damage_immunities);
+  const rawResistances = monster.resistances_and_immunities?.damage_resistances_display || safeText(monster.damage_resistances);
+  const rawCondImmunities = monster.resistances_and_immunities?.condition_immunities_display || safeText(monster.condition_immunities);
+  const rawLanguages = monster.languages?.as_string || safeText(monster.languages);
 
-  const immunitiesText = monster.resistances_and_immunities?.damage_immunities_display || safeText(monster.damage_immunities);
-  const resistancesText = monster.resistances_and_immunities?.damage_resistances_display || safeText(monster.damage_resistances);
-  const condImmunitiesText = monster.resistances_and_immunities?.condition_immunities_display || safeText(monster.condition_immunities);
-  const languagesText = monster.languages?.as_string || safeText(monster.languages);
+  const immunitiesText = translateCommaList(rawImmunities, lang);
+  const resistancesText = translateCommaList(rawResistances, lang);
+  const condImmunitiesText = translateCommaList(rawCondImmunities, lang);
+  const languagesText = translateCommaList(rawLanguages, lang);
+  const armorDetailText = monster.armor_detail ? translateCommaList(safeText(monster.armor_detail), lang) : '';
 
   return (
     <div className="bg-[#2B2C30] border border-[#453745] text-gray-200 p-4 rounded-xl mt-2 shadow-inner text-sm font-sans">
-      <div className="border-b-2 border-[#453745] pb-2 mb-2.5">
-          <h4 className="font-bold text-lg text-[#FF1457] capitalize tracking-wide">{translateName(safeText(monster.name), lang)}</h4>
-          <p className="italic text-xs text-gray-400 capitalize">
-              {translateTerm(safeText(monster.size), lang)} {translateTerm(safeText(monster.type), lang)}, {translateTerm(safeText(monster.alignment), lang) || 'Any alignment'}
-          </p>
+      <div className="border-b-2 border-[#453745] pb-2 mb-2.5 flex justify-between items-start gap-2">
+          <div>
+              <h4 className="font-bold text-lg text-[#FF1457] capitalize tracking-wide">{translateName(safeText(monster.name), lang)}</h4>
+              <p className="italic text-xs text-gray-400 capitalize">
+                  {translateTerm(safeText(monster.size), lang)} {translateTerm(safeText(monster.type), lang)}, {translateTerm(safeText(monster.alignment), lang) || (lang === 'pt' ? 'Qualquer alinhamento' : 'Any alignment')}
+              </p>
+          </div>
+          {lang === 'pt' && (
+              <span className="text-[9px] font-bold uppercase tracking-wider bg-[#35313B] text-gray-400 px-2 py-1 rounded-full border border-[#453745] flex items-center gap-1 shrink-0">
+                  {isTranslating ? (
+                      <>
+                          <Loader2 size={10} className="animate-spin text-[#FF1457]" />
+                          Traduzindo...
+                      </>
+                  ) : (
+                      <>
+                          <Sparkles size={10} className="text-[#FF1457]" />
+                          PT-BR
+                      </>
+                  )}
+              </span>
+          )}
       </div>
 
       <div className="border-b-2 border-[#453745] pb-2.5 mb-2.5 text-xs space-y-1">
           <p>
               <span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Classe de Armadura' : 'Armor Class'}:</span>{' '}
               {safeText(monster.armor_class) || '10'}
-              {monster.armor_detail ? ` (${safeText(monster.armor_detail)})` : ''}
+              {armorDetailText ? ` (${armorDetailText})` : ''}
           </p>
           <p>
               <span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Pontos de Vida' : 'Hit Points'}:</span>{' '}
@@ -201,11 +225,11 @@ export const StatBlock = ({ monster, lang }) => {
               {monster.passive_perception && (
                   <p>
                       <span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Sentidos' : 'Senses'}:</span>{' '}
-                      {monster.blindsight_range ? `Blindsight ${monster.blindsight_range} ft., ` : ''}
-                      {monster.darkvision_range ? `Darkvision ${monster.darkvision_range} ft., ` : ''}
-                      {monster.tremorsense_range ? `Tremorsense ${monster.tremorsense_range} ft., ` : ''}
-                      {monster.truesight_range ? `Truesight ${monster.truesight_range} ft., ` : ''}
-                      Passive Perception {monster.passive_perception}
+                      {monster.blindsight_range ? `${lang === 'pt' ? 'Percepção às Cegas' : 'Blindsight'} ${monster.blindsight_range} ft., ` : ''}
+                      {monster.darkvision_range ? `${lang === 'pt' ? 'Visão no Escuro' : 'Darkvision'} ${monster.darkvision_range} ft., ` : ''}
+                      {monster.tremorsense_range ? `${lang === 'pt' ? 'Sentido Sísmico' : 'Tremorsense'} ${monster.tremorsense_range} ft., ` : ''}
+                      {monster.truesight_range ? `${lang === 'pt' ? 'Visão Verdadeira' : 'Truesight'} ${monster.truesight_range} ft., ` : ''}
+                      {lang === 'pt' ? 'Percepção Passiva' : 'Passive Perception'} {monster.passive_perception}
                   </p>
               )}
               {languagesText && <p><span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Idiomas' : 'Languages'}:</span> {languagesText}</p>}

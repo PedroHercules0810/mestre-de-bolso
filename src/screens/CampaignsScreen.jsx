@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ScrollText, Plus, FileText, Search, Edit3, Trash2, ArrowRight, Swords, Shield, Skull, X } from 'lucide-react';
+import { ArrowLeft, ScrollText, Plus, FileText, Search, Edit3, Trash2, ArrowRight, Swords, Shield, Skull, X, BookOpen } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { safeText } from '../utils/helpers';
 import { translateName } from '../utils/translators';
@@ -19,6 +19,15 @@ export const CampaignsScreen = ({ onNavigate }) => {
     const [noteContent, setNoteContent] = useState("");
     const [searchNoteTerm, setSearchNoteTerm] = useState("");
     const [expandedNote, setExpandedNote] = useState({});
+
+    const [showRuleForm, setShowRuleForm] = useState(false);
+    const [editingRuleId, setEditingRuleId] = useState(null);
+    const [ruleTitle, setRuleTitle] = useState("");
+    const [ruleCategory, setRuleCategory] = useState("");
+    const [ruleDesc, setRuleDesc] = useState("");
+    const [searchRuleTerm, setSearchRuleTerm] = useState("");
+    const [expandedRule, setExpandedRule] = useState({});
+
     const [expandedEncounter, setExpandedEncounter] = useState({});
     const [expandedMonster, setExpandedMonster] = useState({});
     const [confirmDelete, setConfirmDelete] = useState(null);
@@ -34,7 +43,8 @@ export const CampaignsScreen = ({ onNavigate }) => {
             description: campaignDesc.trim(),
             createdAt: new Date().toISOString(),
             notes: [],
-            encounters: []
+            encounters: [],
+            rules: []
         };
         setCampaigns(prev => [newCamp, ...prev]);
         setCampaignName("");
@@ -99,6 +109,61 @@ export const CampaignsScreen = ({ onNavigate }) => {
         setConfirmDelete(null);
     };
 
+    const handleSaveRule = (e) => {
+        e.preventDefault();
+        if (!ruleTitle.trim() && !ruleDesc.trim()) return;
+        const finalTitle = ruleTitle.trim() || (lang === 'pt' ? 'Regra sem título' : 'Untitled Rule');
+        const finalCat = ruleCategory.trim() || (lang === 'pt' ? 'Geral' : 'General');
+
+        setCampaigns(prev => prev.map(c => {
+            if (c.id !== selectedCampaignId) return c;
+            let updatedRules = [...(c.rules || [])];
+            if (editingRuleId) {
+                updatedRules = updatedRules.map(r => r.id === editingRuleId ? {
+                    ...r,
+                    title: finalTitle,
+                    category: finalCat,
+                    desc: ruleDesc,
+                    updatedAt: new Date().toISOString()
+                } : r);
+            } else {
+                const newRule = {
+                    id: `rule-${Date.now()}`,
+                    title: finalTitle,
+                    category: finalCat,
+                    desc: ruleDesc,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                updatedRules = [newRule, ...updatedRules];
+            }
+            return { ...c, rules: updatedRules };
+        }));
+
+        setRuleTitle("");
+        setRuleCategory("");
+        setRuleDesc("");
+        setEditingRuleId(null);
+        setShowRuleForm(false);
+        showToast(t.ruleSaved);
+    };
+
+    const openEditRule = (rule) => {
+        setEditingRuleId(rule.id);
+        setRuleTitle(rule.title);
+        setRuleCategory(rule.category || "");
+        setRuleDesc(rule.desc);
+        setShowRuleForm(true);
+    };
+
+    const handleDeleteRule = (ruleId) => {
+        setCampaigns(prev => prev.map(c => {
+            if (c.id !== selectedCampaignId) return c;
+            return { ...c, rules: (c.rules || []).filter(r => r.id !== ruleId) };
+        }));
+        setConfirmDelete(null);
+    };
+
     const handleDeleteSavedEncounter = (encId) => {
         setCampaigns(prev => prev.map(c => {
             if (c.id !== selectedCampaignId) return c;
@@ -139,11 +204,24 @@ export const CampaignsScreen = ({ onNavigate }) => {
             n.content.toLowerCase().includes(searchNoteTerm.toLowerCase())
         );
         const encountersList = activeCampaign.encounters || [];
+        const rulesList = (activeCampaign.rules || []).filter(r =>
+            r.title.toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
+            (r.category || '').toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
+            (r.desc || '').toLowerCase().includes(searchRuleTerm.toLowerCase())
+        );
 
         return (
             <div className="p-4 pb-8 max-w-lg mx-auto animate-in fade-in">
                 <button
-                    onClick={() => { setSelectedCampaignId(null); setShowNoteForm(false); setEditingNoteId(null); setSearchNoteTerm(""); }}
+                    onClick={() => {
+                        setSelectedCampaignId(null);
+                        setShowNoteForm(false);
+                        setEditingNoteId(null);
+                        setSearchNoteTerm("");
+                        setShowRuleForm(false);
+                        setEditingRuleId(null);
+                        setSearchRuleTerm("");
+                    }}
                     className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-[#FF1457] mb-4 transition-colors uppercase tracking-wider"
                 >
                     <ArrowLeft size={16} /> {t.backToCampaigns}
@@ -163,18 +241,24 @@ export const CampaignsScreen = ({ onNavigate }) => {
                     </div>
                 </div>
 
-                <div className="flex bg-[#35313B] p-1 rounded-xl mb-4 border border-[#453745] shadow-inner">
+                <div className="flex bg-[#35313B] p-1 rounded-xl mb-4 border border-[#453745] shadow-inner gap-1">
                     <button
                         onClick={() => setActiveSection('notes')}
-                        className={`flex-1 py-2.5 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${activeSection === 'notes' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 py-2.5 px-1 rounded-lg font-bold text-[11px] transition-colors flex items-center justify-center gap-1 ${activeSection === 'notes' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
                     >
-                        <FileText size={14} /> {t.notes} ({(activeCampaign.notes || []).length})
+                        <FileText size={13} /> {t.notes} ({(activeCampaign.notes || []).length})
                     </button>
                     <button
                         onClick={() => setActiveSection('encounters')}
-                        className={`flex-1 py-2.5 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${activeSection === 'encounters' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 py-2.5 px-1 rounded-lg font-bold text-[11px] transition-colors flex items-center justify-center gap-1 ${activeSection === 'encounters' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
                     >
-                        <Swords size={14} /> {t.savedEncounters} ({encountersList.length})
+                        <Swords size={13} /> {t.savedEncounters} ({encountersList.length})
+                    </button>
+                    <button
+                        onClick={() => setActiveSection('rules')}
+                        className={`flex-1 py-2.5 px-1 rounded-lg font-bold text-[11px] transition-colors flex items-center justify-center gap-1 ${activeSection === 'rules' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        <BookOpen size={13} /> {t.homebrewRules} ({(activeCampaign.rules || []).length})
                     </button>
                 </div>
 
@@ -378,19 +462,149 @@ export const CampaignsScreen = ({ onNavigate }) => {
                     </div>
                 )}
 
+                {activeSection === 'rules' && (
+                    <div className="animate-in fade-in">
+                        {!showRuleForm ? (
+                            <button
+                                onClick={() => { setEditingRuleId(null); setRuleTitle(""); setRuleCategory(""); setRuleDesc(""); setShowRuleForm(true); }}
+                                className="w-full bg-gradient-to-r from-[#FF1457] to-[#613C4C] hover:opacity-90 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-[#FF1457]/30 flex items-center justify-center gap-2 mb-4 transform active:scale-95 transition-all text-sm"
+                            >
+                                <Plus size={18} /> {t.newRule}
+                            </button>
+                        ) : (
+                            <form onSubmit={handleSaveRule} className="bg-[#35313B] p-4 rounded-2xl border border-[#FF1457]/50 mb-4 shadow-xl animate-in fade-in zoom-in-95 space-y-3">
+                                <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                    <BookOpen size={16} className="text-[#FF1457]" /> {editingRuleId ? t.editRule : t.newRule}
+                                </h4>
+                                <input
+                                    type="text"
+                                    placeholder={t.ruleTitle}
+                                    value={ruleTitle}
+                                    onChange={e => setRuleTitle(e.target.value)}
+                                    required
+                                    className="w-full bg-[#2B2C30] border border-[#453745] text-white rounded-xl p-3 outline-none focus:border-[#FF1457] text-sm font-bold"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder={t.ruleCategory}
+                                    value={ruleCategory}
+                                    onChange={e => setRuleCategory(e.target.value)}
+                                    className="w-full bg-[#2B2C30] border border-[#453745] text-gray-200 rounded-xl p-3 outline-none focus:border-[#FF1457] text-xs font-semibold"
+                                />
+                                <textarea
+                                    rows={5}
+                                    placeholder={t.ruleDesc}
+                                    value={ruleDesc}
+                                    onChange={e => setRuleDesc(e.target.value)}
+                                    required
+                                    className="w-full bg-[#2B2C30] border border-[#453745] text-gray-200 rounded-xl p-3 outline-none focus:border-[#FF1457] text-sm leading-relaxed resize-y"
+                                />
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setShowRuleForm(false); setEditingRuleId(null); }}
+                                        className="flex-1 bg-[#453745] hover:bg-[#613C4C] text-white py-2.5 rounded-xl font-bold text-sm transition-colors"
+                                    >
+                                        {t.cancel}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 bg-[#FF1457] hover:opacity-90 text-white py-2.5 rounded-xl font-bold text-sm transition-colors shadow-md"
+                                    >
+                                        {t.save}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {(activeCampaign.rules || []).length > 0 && (
+                            <div className="relative mb-4">
+                                <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                <input
+                                    type="text"
+                                    placeholder={t.searchCampaignRules}
+                                    value={searchRuleTerm}
+                                    onChange={e => setSearchRuleTerm(e.target.value)}
+                                    className="w-full bg-[#35313B] text-white p-3 pl-10 rounded-xl border border-[#453745] outline-none focus:border-[#FF1457] transition-colors shadow-inner text-sm"
+                                />
+                            </div>
+                        )}
+
+                        <div className="space-y-3">
+                            {rulesList.length === 0 ? (
+                                <div className="text-center py-10 text-gray-500 italic bg-[#35313B] rounded-2xl border border-[#453745] border-dashed p-6">
+                                    <BookOpen size={36} className="mx-auto mb-2 opacity-40 text-[#FF1457]" />
+                                    {t.noHomebrewRules}
+                                </div>
+                            ) : (
+                                rulesList.map(rule => {
+                                    const isExp = expandedRule[rule.id] !== undefined ? expandedRule[rule.id] : true;
+                                    return (
+                                        <div key={rule.id} className="bg-[#35313B] rounded-2xl border border-[#453745] overflow-hidden shadow-md">
+                                            <div
+                                                onClick={() => setExpandedRule(prev => ({ ...prev, [rule.id]: !isExp }))}
+                                                className="p-4 flex justify-between items-start gap-2 cursor-pointer hover:bg-[#453745]/50 transition-colors"
+                                            >
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h4 className="font-bold text-white text-base leading-snug">{rule.title}</h4>
+                                                        {rule.category && (
+                                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-[#FF1457]/20 text-[#FF1457] px-2 py-0.5 rounded-full border border-[#FF1457]/40">
+                                                                {rule.category}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-500 mt-0.5">{formatDate(rule.updatedAt)}</p>
+                                                </div>
+                                                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                                                    <button
+                                                        onClick={() => openEditRule(rule)}
+                                                        className="p-2 text-gray-400 hover:text-white bg-[#2B2C30] rounded-lg border border-[#453745] transition-colors"
+                                                    >
+                                                        <Edit3 size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setConfirmDelete({ type: 'rule', id: rule.id })}
+                                                        className="p-2 text-gray-400 hover:text-[#FF1457] bg-[#2B2C30] rounded-lg border border-[#453745] transition-colors"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {isExp && rule.desc && (
+                                                <div className="px-4 pb-4 pt-2 border-t border-[#453745]/60 bg-[#2B2C30]/60 text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
+                                                    {rule.desc}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {confirmDelete && (
                     <div className="fixed inset-0 bg-[#2B2C30]/90 flex items-center justify-center p-4 z-50">
                         <div className="bg-[#35313B] p-6 rounded-2xl border border-[#FF1457]/50 shadow-2xl max-w-sm w-full text-center">
                             <Trash2 size={40} className="mx-auto text-[#FF1457] mb-3" />
                             <p className="text-white font-bold mb-6">
-                                {confirmDelete.type === 'encounter' ? t.deleteEncounterConfirm : t.deleteNoteConfirm}
+                                {confirmDelete.type === 'encounter'
+                                    ? t.deleteEncounterConfirm
+                                    : confirmDelete.type === 'rule'
+                                        ? t.deleteRuleConfirm
+                                        : t.deleteNoteConfirm}
                             </p>
                             <div className="flex gap-3">
                                 <button onClick={() => setConfirmDelete(null)} className="flex-1 bg-[#453745] hover:bg-[#613C4C] text-white font-bold py-2.5 rounded-xl">
                                     {t.cancel}
                                 </button>
                                 <button
-                                    onClick={() => confirmDelete.type === 'encounter' ? handleDeleteSavedEncounter(confirmDelete.id) : handleDeleteNote(confirmDelete.id)}
+                                    onClick={() => {
+                                        if (confirmDelete.type === 'encounter') handleDeleteSavedEncounter(confirmDelete.id);
+                                        else if (confirmDelete.type === 'rule') handleDeleteRule(confirmDelete.id);
+                                        else handleDeleteNote(confirmDelete.id);
+                                    }}
                                     className="flex-1 bg-[#FF1457] hover:bg-[#d10e46] text-white font-bold py-2.5 rounded-xl"
                                 >
                                     <Trash2 size={16} className="inline mr-1" /> Delete
@@ -477,6 +691,9 @@ export const CampaignsScreen = ({ onNavigate }) => {
                                     </span>
                                     <span className="text-[#FF1457] bg-[#2B2C30] px-2 py-0.5 rounded-md border border-[#453745]">
                                         {(camp.encounters || []).length} {t.savedEncounters}
+                                    </span>
+                                    <span className="text-[#FF1457] bg-[#2B2C30] px-2 py-0.5 rounded-md border border-[#453745]">
+                                        {(camp.rules || []).length} {t.homebrewRules}
                                     </span>
                                     <span>{formatDate(camp.createdAt)}</span>
                                 </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, X, ArrowRight, Swords, Shield } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { safeText } from '../utils/helpers';
-import { translateName, translateTerm } from '../utils/translators';
+import { translateName, translateTerm, matchesBilingualSearch } from '../utils/translators';
 import { StatBlock } from '../components/StatBlock';
 
 export const BestiaryScreen = () => {
@@ -14,7 +14,7 @@ export const BestiaryScreen = () => {
     const types = ['Any', 'Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead'];
 
     const filteredMonsters = monsters.filter(m => {
-        const matchesSearch = safeText(m.name).toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = matchesBilingualSearch(safeText(m.name), searchTerm);
         let matchesType = true;
         if (typeFilter !== 'Any') {
             const mType = typeof m.type === 'object' ? String(m.type.name || m.type.desc || m.type) : String(m.type || '');
@@ -60,7 +60,14 @@ export const BestiaryScreen = () => {
                                 onClick={() => setExpanded({ ...expanded, [m.slug]: !expanded[m.slug] })}
                             >
                                 <div>
-                                    <h4 className="font-bold text-white leading-tight">{translateName(safeText(m.name), lang)}</h4>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="font-bold text-white leading-tight">{translateName(safeText(m.name), lang)}</h4>
+                                        {m.isHomebrew && (
+                                            <span className="text-[9px] font-bold uppercase tracking-wider bg-[#FF1457]/20 text-[#FF1457] px-2 py-0.5 rounded-full border border-[#FF1457]/40">
+                                                Homebrew
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs text-gray-400 capitalize">CR {safeText(m.challenge_rating)} • {translateTerm(safeText(m.type), lang)}</p>
                                 </div>
                                 <span className="text-gray-500">
