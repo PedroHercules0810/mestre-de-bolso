@@ -96,7 +96,9 @@ export const HomeScreen = ({ onNavigate }) => {
             <div>
               <label className="text-xs text-gray-400 mb-1 block">{t.environment}</label>
               <select value={envFilter} onChange={(e) => setEnvFilter(e.target.value)} className="w-full bg-[#2B2C30] border border-[#453745] text-white rounded-lg p-3 outline-none focus:border-[#FF1457] transition-colors">
-                {['Any', 'Arctic', 'Coastal', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp', 'Underdark', 'Underwater', 'Urban'].map(env => <option key={env} value={env}>{env === 'Any' ? t.any : env}</option>)}
+                {['Any', 'Arctic', 'Coastal', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp', 'Underdark', 'Underwater', 'Urban'].map(env => (
+                    <option key={env} value={env}>{env === 'Any' ? t.any : translateTerm(env, lang)}</option>
+                ))}
               </select>
             </div>
           </div>

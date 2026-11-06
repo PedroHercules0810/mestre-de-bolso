@@ -1,4 +1,5 @@
 import { CR_TO_XP } from '../constants/gameData';
+import { getMonsterEnvironments } from '../utils/environmentMapper';
 
 export const DB_NAME = 'QuickEncounterDB';
 export const STORE_MONSTERS = 'monsters';
@@ -52,6 +53,9 @@ export const saveDataToDB = async (storeName, dataList) => {
             }
             else {
                 item.xp = 0;
+            }
+            if (!Array.isArray(item.environments) || item.environments.length === 0) {
+                item.environments = getMonsterEnvironments(item);
             }
         }
 

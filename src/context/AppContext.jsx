@@ -5,6 +5,7 @@ import { STORE_MONSTERS, STORE_ITEMS, saveDataToDB, getAllDataFromDB, deleteData
 import { initTranslationCache } from '../services/translatorService';
 import { safeText, getDeepStat } from '../utils/helpers';
 import { translateName } from '../utils/translators';
+import { getMonsterEnvironments } from '../utils/environmentMapper';
 import { generateEncounterLoot } from '../utils/lootGenerator';
 
 export const AppContext = createContext();
@@ -176,8 +177,8 @@ export const AppProvider = ({ children }) => {
           typeMatch = typeString.toLowerCase().includes(filters.type.toLowerCase());
       }
       if (filters.environment && filters.environment !== 'Any') {
-          const envString = Array.isArray(m.environments) ? m.environments.join(', ') : (m.environments || m.environment || '');
-          envMatch = envString.toLowerCase().includes(filters.environment.toLowerCase());
+          const monsterEnvs = getMonsterEnvironments(m);
+          envMatch = monsterEnvs.some(env => env.toLowerCase() === filters.environment.toLowerCase());
       }
       return typeMatch && envMatch && m.xp && m.xp > 0;
     });

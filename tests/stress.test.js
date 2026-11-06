@@ -8,6 +8,7 @@ import { rollDice, parseCR, safeText, getDeepStat } from '../src/utils/helpers.j
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
 import { generateAdvancedLoot, generateEncounterLoot } from '../src/utils/lootGenerator.js';
+import { getMonsterEnvironments, ENVIRONMENTS_LIST } from '../src/utils/environmentMapper.js';
 import {
     translateName,
     translateTerm,
@@ -241,3 +242,28 @@ test('7. Loot Generator Stress Test (5,000 Iterations & Rarity Isolation)', () =
     );
     assert.ok(encLoot && encLoot.gems.includes('5000gp'));
 });
+
+test('8. Environment Mapper Stress Test (Open5e v2 Empty Environments Compatibility)', () => {
+    const sampleSRD2024Monsters = [
+        { name: 'Adult White Dragon', type: { name: 'Dragon' }, environments: [] },
+        { name: 'Aboleth', type: { name: 'Aberration' }, environments: [] },
+        { name: 'Bandit', type: { name: 'Humanoid' }, environments: [] },
+        { name: 'Skeleton', type: { name: 'Undead' }, environments: [] },
+        { name: 'Camel', type: { name: 'Beast' }, environments: [] },
+        { name: 'Goblin', type: { name: 'Humanoid' }, environments: [] },
+        { name: 'Hill Giant', type: { name: 'Giant' }, environments: [] },
+        { name: 'Adult Red Dragon', type: { name: 'Dragon' }, environments: [] },
+        { name: 'Adult Black Dragon', type: { name: 'Dragon' }, environments: [] },
+        { name: 'Hunter Shark', type: { name: 'Beast' }, speed: { swim: 40 }, environments: [] }
+    ];
+
+    // Every single one of the 11 official environments must have matching monsters
+    for (const env of ENVIRONMENTS_LIST) {
+        const matches = sampleSRD2024Monsters.filter(m =>
+            getMonsterEnvironments(m).some(e => e.toLowerCase() === env.toLowerCase())
+        );
+        assert.ok(matches.length > 0, `Environment ${env} matched 0 monsters!`);
+        assert.notEqual(translateTerm(env, 'pt'), env, `Environment ${env} should be translated to PT`);
+    }
+});
+

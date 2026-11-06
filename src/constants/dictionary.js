@@ -25,7 +25,7 @@ export const DICTIONARY = {
     budgetTooLow: "Budget is too low to spawn monsters. Increase the budget adjustment.",
     noMonsters: "No monsters match the selected filters.", noItems: "No items match.",
     forceGenerate: "Generate Anyway (Possible TPK 💀)", cancel: "Cancel", error: "Generation Failed",
-    creator: "Criado por: Pedro Hércues", aiDisclaimer: "Este aplicativo foi gerado com IA e pode apresentar problemas. Caso encontre erros, entre em contato:", email: "pedrosouzagrangeiro@gmail.com",
+    creator: "Criado por: Pedro Hércules", aiDisclaimer: "Este aplicativo foi gerado com IA e pode apresentar problemas. Caso encontre erros, entre em contato:", email: "pedrosouzagrangeiro@gmail.com",
     addedToEncounter: "added to Encounter!", addedToTracker: "sent to Combat!",
     lootGenTitle: "Loot Generator", compendiumTitle: "Compendium",
     lootTier: "Challenge Tier", lootType: "Treasure Type",

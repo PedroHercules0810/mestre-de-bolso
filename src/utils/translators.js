@@ -777,6 +777,11 @@ const TERM_DICT = {
     // Tamanhos
     "tiny": "Miúdo", "small": "Pequeno", "medium": "Médio", "large": "Grande", "huge": "Enorme", "gargantuan": "Imenso",
 
+    // Ambientes (Environments)
+    "arctic": "Ártico", "coastal": "Costeiro", "desert": "Deserto", "forest": "Floresta",
+    "grassland": "Planície", "hill": "Colina", "mountain": "Montanha", "swamp": "Pântano",
+    "underdark": "Subterrâneo (Underdark)", "underwater": "Subaquático", "urban": "Urbano",
+
     // Tipos de Criatura
     "aberration": "Aberração", "beast": "Fera", "celestial": "Celestial", "construct": "Construto",
     "dragon": "Dragão", "elemental": "Elemental", "fey": "Fada", "fiend": "Corruptor",
