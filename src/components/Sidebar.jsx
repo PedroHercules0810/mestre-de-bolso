@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Skull, Book, Dices, Swords, Package, Search, Gem, Shield, 
-  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight, Sparkles, Wand2 
+  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight, Sparkles, Flame 
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
@@ -34,9 +34,9 @@ export const Sidebar = ({ isOpen, onClose, onNavigate, currentRoute, t, lang }) 
             ]
         },
         {
-            id: 'spells', label: t.spells, icon: Wand2,
+            id: 'spells', label: t.spells, icon: Flame,
             sub: [
-                { id: 'grimoire', label: t.grimoire, icon: Sparkles }
+                { id: 'grimoire', label: t.grimoire, icon: Flame }
             ]
         },
         {

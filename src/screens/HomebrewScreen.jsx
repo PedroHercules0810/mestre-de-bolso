@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Trash2, Book, Swords, Shield, Sparkles, X, ArrowRight, Check, Edit3, Skull, Gem, Package, Wand2
+  Trash2, Book, Swords, Shield, Sparkles, X, ArrowRight, Check, Edit3, Skull, Gem, Package, Flame
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { calculateMonsterCR } from '../utils/crCalculator';
@@ -707,7 +707,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                             : 'bg-[#35313B] text-gray-400 hover:text-white'
                     }`}
                 >
-                    <Wand2 size={15} /> {t.homebrewSpellsTab}
+                    <Flame size={15} /> {t.homebrewSpellsTab}
                 </button>
             </div>
 
@@ -1587,7 +1587,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                             onClick={() => setSpellActiveTab('list')}
                             className={`flex-1 py-2.5 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${spellActiveTab === 'list' ? 'bg-[#FF1457] text-white shadow' : 'text-gray-400 hover:text-white'}`}
                         >
-                            <Wand2 size={14} /> {t.myHomebrewSpells} ({homebrewSpells.length})
+                            <Flame size={14} /> {t.myHomebrewSpells} ({homebrewSpells.length})
                         </button>
                     </div>
 
@@ -1597,7 +1597,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                             <div className="bg-gradient-to-br from-[#613C4C] to-[#35313B] p-4 rounded-2xl border border-[#FF1457]/50 shadow-lg sticky top-[68px] z-20 backdrop-blur-md">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-xs font-bold uppercase tracking-wider text-gray-200 flex items-center gap-1.5">
-                                        <Wand2 size={14} className="text-[#FF1457]" /> {t.calculatedSpellLevel} (DMG)
+                                        <Flame size={14} className="text-[#FF1457]" /> {t.calculatedSpellLevel} (DMG)
                                     </span>
                                     {editingSpellSlug && (
                                         <button
@@ -1640,7 +1640,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                             {/* Identidade & Escola da Magia */}
                             <div className="bg-[#35313B] p-4 rounded-2xl border border-[#453745] space-y-3">
                                 <h3 className="text-xs font-bold text-[#FF1457] uppercase tracking-wider flex items-center gap-1.5">
-                                    <Wand2 size={14} /> {lang === 'pt' ? 'Identidade & Escola da Magia' : 'Spell Identity & School'}
+                                    <Flame size={14} /> {lang === 'pt' ? 'Identidade & Escola da Magia' : 'Spell Identity & School'}
                                 </h3>
                                 <div>
                                     <label className="text-xs text-gray-400 font-semibold mb-1 block">{t.spellName} *</label>
@@ -1946,7 +1946,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                                         onClick={(e) => handleSaveHomebrewSpell(e, true)}
                                         className="flex-1 bg-gradient-to-r from-[#FF1457] to-[#613C4C] hover:opacity-90 text-white font-black py-3.5 rounded-xl shadow-lg shadow-[#FF1457]/30 flex items-center justify-center gap-2 text-xs transition-all"
                                     >
-                                        <Wand2 size={16} /> {t.save} & {t.sendToGrimoire}
+                                        <Flame size={16} /> {t.save} & {t.sendToGrimoire}
                                     </button>
                                 </div>
                             </div>
@@ -1957,7 +1957,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                         <div className="space-y-3 animate-in fade-in">
                             {homebrewSpells.length === 0 ? (
                                 <div className="text-center py-12 text-gray-500 italic bg-[#35313B] rounded-2xl border border-[#453745] border-dashed p-6">
-                                    <Wand2 size={40} className="mx-auto mb-2 opacity-40 text-[#FF1457]" />
+                                    <Flame size={40} className="mx-auto mb-2 opacity-40 text-[#FF1457]" />
                                     <p>{t.noHomebrewSpells}</p>
                                 </div>
                             ) : (
@@ -2015,7 +2015,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                                                                 onClick={() => sendHomebrewToGrimoire(spell)}
                                                                 className="flex-1 bg-[#FF1457] hover:opacity-90 text-white py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 shadow-md"
                                                             >
-                                                                <Wand2 size={14} /> {t.sendToGrimoire}
+                                                                <Flame size={14} /> {t.sendToGrimoire}
                                                             </button>
                                                         ) : (
                                                             <button

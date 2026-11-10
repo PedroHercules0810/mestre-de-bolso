@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skull, Package, Sparkles, Settings, RotateCcw, Download, Info } from 'lucide-react';
+import { Skull, Package, Flame, Settings, RotateCcw, Download, Info } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 export const MenuScreen = () => {
@@ -33,7 +33,7 @@ export const MenuScreen = () => {
                     <h3 className="text-xl font-black text-white">{spells ? spells.length : 0}</h3>
                     <p className="text-[10px] text-gray-300 font-semibold uppercase">{t.spells}</p>
                 </div>
-                <Sparkles size={22} className="text-[#FF1457]/50" />
+                <Flame size={22} className="text-[#FF1457]/50" />
             </div>
         </div>
 

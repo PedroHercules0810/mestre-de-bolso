@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Search, X, ArrowRight, Sparkles, Download, RotateCcw, ChevronDown, ChevronRight, Trash2
+    Search, X, ArrowRight, Flame, Download, RotateCcw, ChevronDown, ChevronRight, Trash2
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { safeText } from '../utils/helpers';
@@ -240,7 +240,7 @@ export const GrimoireScreen = () => {
             {/* Estado de Cache Vazio / Sincronização */}
             {spells.length === 0 ? (
                 <div className="text-center py-10 px-6 bg-[#35313B] rounded-2xl border border-[#453745] border-dashed space-y-4">
-                    <Sparkles size={40} className="mx-auto text-[#FF1457] opacity-70" />
+                    <Flame size={40} className="mx-auto text-[#FF1457] opacity-70" />
                     <p className="text-xs text-gray-300 leading-relaxed">{t.noSpellsCache}</p>
                     <button
                         onClick={() => syncData('spells')}
