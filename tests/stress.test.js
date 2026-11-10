@@ -7,6 +7,7 @@ import { REFERENCE_DATA } from '../src/constants/referenceData.js';
 import { rollDice, parseCR, safeText, getDeepStat } from '../src/utils/helpers.js';
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
+import { calculateSpellPower, parseDiceAverage, SPELL_LEVEL_TABLE } from '../src/utils/spellCalculator.js';
 import { generateAdvancedLoot, generateEncounterLoot } from '../src/utils/lootGenerator.js';
 import { getMonsterEnvironments, ENVIRONMENTS_LIST } from '../src/utils/environmentMapper.js';
 import {
@@ -290,5 +291,26 @@ test('9. Grimoire D&D 5.5e (SRD 2024) Spells Dictionary & Class/School Translati
         assert.notEqual(translateTerm(school, 'pt'), school, `School ${school} should translate to PT`);
     }
 });
+
+test('10. Homebrew Spell Level Calculator Stress Test (DMG p. 283-284)', () => {
+    assert.equal(SPELL_LEVEL_TABLE.length, 10);
+    assert.equal(parseDiceAverage('8d6'), 28);
+    assert.equal(parseDiceAverage('2d10'), 11);
+    assert.equal(parseDiceAverage('1d10'), 5.5);
+
+    const cantrip = calculateSpellPower({ autoLevel: true, damageDice: '1d10', targetScope: 'single', effectTier: 0, halfOnSave: false });
+    assert.equal(cantrip.level, 0);
+
+    const lvl1Single = calculateSpellPower({ autoLevel: true, damageDice: '2d10', targetScope: 'single', effectTier: 0, halfOnSave: true });
+    assert.equal(lvl1Single.level, 1);
+
+    const fireballLike = calculateSpellPower({ autoLevel: true, damageDice: '6d6', targetScope: 'aoe', effectTier: 0, halfOnSave: true });
+    assert.equal(fireballLike.level, 3);
+
+    const manualLvl9 = calculateSpellPower({ autoLevel: false, manualLevel: 9, damageDice: '40d6', targetScope: 'aoe' });
+    assert.equal(manualLvl9.level, 9);
+    assert.equal(manualLvl9.minCasterLevel, 17);
+});
+
 
 

@@ -53,6 +53,15 @@ export const AppProvider = ({ children }) => {
       return [];
     }
   });
+  const [homebrewSpells, setHomebrewSpells] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_homebrew_spells');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to load homebrew spells", e);
+      return [];
+    }
+  });
 
   useEffect(() => {
     try {
@@ -77,6 +86,14 @@ export const AppProvider = ({ children }) => {
       console.error("Failed to save homebrew items", e);
     }
   }, [homebrewItems]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_homebrew_spells', JSON.stringify(homebrewSpells));
+    } catch (e) {
+      console.error("Failed to save homebrew spells", e);
+    }
+  }, [homebrewSpells]);
   
   const [debugLogs, setDebugLogs] = useState(["[SISTEMA] Aguardando ações..."]);
   const t = DICTIONARY[lang];
@@ -465,6 +482,33 @@ export const AppProvider = ({ children }) => {
       }
   };
 
+  const sendHomebrewToGrimoire = async (spellObj) => {
+      try {
+          const toSave = { ...spellObj, isHomebrew: true };
+          await saveDataToDB(STORE_SPELLS, [toSave]);
+          await loadCache();
+          showToast(`${safeText(spellObj.name)} ${t.sentToGrimoireToast}`);
+          return true;
+      } catch (e) {
+          console.error("Error sending homebrew spell to grimoire", e);
+          return false;
+      }
+  };
+
+  const removeSpellFromGrimoire = async (slug, spellName = "") => {
+      try {
+          await deleteDataFromDB(STORE_SPELLS, slug);
+          await loadCache();
+          if (spellName) {
+              showToast(`${safeText(spellName)} ${t.removedFromGrimoireToast}`);
+          }
+          return true;
+      } catch (e) {
+          console.error("Error removing spell from grimoire", e);
+          return false;
+      }
+  };
+
   return (
     <AppContext.Provider value={{
       lang, setLang, t, monsters, items, spells, syncData, isSyncing, debugLogs, addLog,
@@ -475,6 +519,7 @@ export const AppProvider = ({ children }) => {
       campaigns, setCampaigns, addEncounterToCampaign,
       homebrewMonsters, setHomebrewMonsters, sendHomebrewToBestiary, removeMonsterFromBestiary,
       homebrewItems, setHomebrewItems, sendHomebrewToItems, removeItemFromCompendium,
+      homebrewSpells, setHomebrewSpells, sendHomebrewToGrimoire, removeSpellFromGrimoire,
       showToast
     }}>
       {children}

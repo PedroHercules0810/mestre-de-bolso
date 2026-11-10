@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Search, X, ArrowRight, Sparkles, Download, RotateCcw, ChevronDown, ChevronRight
+    Search, X, ArrowRight, Sparkles, Download, RotateCcw, ChevronDown, ChevronRight, Trash2
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { safeText } from '../utils/helpers';
@@ -23,12 +23,24 @@ const SPELL_CLASSES = [
     'Warlock',
     'Wizard'
 ];
+const SPELL_SCHOOLS = [
+    'Any',
+    'Abjuration',
+    'Conjuration',
+    'Divination',
+    'Enchantment',
+    'Evocation',
+    'Illusion',
+    'Necromancy',
+    'Transmutation'
+];
 
 export const GrimoireScreen = () => {
-    const { t, spells, lang, isSyncing, syncData } = useAppContext();
+    const { t, spells, lang, isSyncing, syncData, removeSpellFromGrimoire } = useAppContext();
     const [searchTerm, setSearchTerm] = useState('');
     const [levelFilter, setLevelFilter] = useState('Any');
     const [classFilter, setClassFilter] = useState('Any');
+    const [schoolFilter, setSchoolFilter] = useState('Any');
     const [collapsedLevels, setCollapsedLevels] = useState({});
     const [expandedSpells, setExpandedSpells] = useState({});
     const autoSyncedRef = useRef(false);
@@ -66,11 +78,21 @@ export const GrimoireScreen = () => {
         return false;
     };
 
+    const spellHasSchool = (s, targetSchool) => {
+        if (targetSchool === 'Any') return true;
+        const targetLower = targetSchool.toLowerCase();
+        const schoolRaw = typeof s.school === 'object'
+            ? String(s.school?.name || s.school?.key || '')
+            : String(s.school || '');
+        return schoolRaw.toLowerCase().includes(targetLower);
+    };
+
     const filteredSpells = spells.filter(s => {
         const matchesSearch = matchesBilingualSearch(safeText(s.name), searchTerm);
         const matchesLevel = levelFilter === 'Any' || getSpellLevel(s) === parseInt(levelFilter, 10);
         const matchesClass = spellHasClass(s, classFilter);
-        return matchesSearch && matchesLevel && matchesClass;
+        const matchesSchool = spellHasSchool(s, schoolFilter);
+        return matchesSearch && matchesLevel && matchesClass && matchesSchool;
     });
 
     // Agrupa as magias filtradas por nível (0 a 9) e ordena alfabeticamente pelo nome traduzido
@@ -137,8 +159,8 @@ export const GrimoireScreen = () => {
                 )}
             </div>
 
-            {/* Filtros Duplos: Nível da Magia & Classe */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            {/* Filtros Triplos: Nível da Magia, Classe e Escola */}
+            <div className="grid grid-cols-3 gap-2 mb-3">
                 <div>
                     <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1 block ml-1">
                         {t.spellLevel}
@@ -169,6 +191,23 @@ export const GrimoireScreen = () => {
                         {SPELL_CLASSES.map(cls => (
                             <option key={cls} value={cls}>
                                 {cls === 'Any' ? t.anyClass : translateTerm(cls, lang)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1 block ml-1">
+                        {t.spellSchool}
+                    </label>
+                    <select
+                        value={schoolFilter}
+                        onChange={e => setSchoolFilter(e.target.value)}
+                        className="w-full bg-[#35313B] border border-[#453745] text-gray-200 rounded-xl p-2.5 outline-none focus:border-[#FF1457] font-bold text-xs"
+                    >
+                        {SPELL_SCHOOLS.map(sch => (
+                            <option key={sch} value={sch}>
+                                {sch === 'Any' ? t.anySchool : translateTerm(sch, lang)}
                             </option>
                         ))}
                     </select>
@@ -278,6 +317,11 @@ export const GrimoireScreen = () => {
                                                                 <h4 className="font-bold text-white leading-tight text-sm">
                                                                     {translateSpellName(safeText(spell.name), lang)}
                                                                 </h4>
+                                                                {spell.isHomebrew && (
+                                                                    <span className="text-[9px] font-black bg-[#FF1457]/20 text-[#FF1457] px-1.5 py-0.5 rounded border border-[#FF1457]/40 uppercase">
+                                                                        HB
+                                                                    </span>
+                                                                )}
                                                                 {spell.concentration && (
                                                                     <span className="text-[9px] font-black bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/40" title={t.concentration}>
                                                                         C
@@ -300,7 +344,17 @@ export const GrimoireScreen = () => {
                                                     </div>
 
                                                     {isExp && (
-                                                        <div className="p-3 bg-[#2B2C30] border-t border-[#453745] animate-in fade-in">
+                                                        <div className="p-3 bg-[#2B2C30] border-t border-[#453745] animate-in fade-in space-y-2.5">
+                                                            {spell.isHomebrew && (
+                                                                <div className="flex justify-end">
+                                                                    <button
+                                                                        onClick={() => removeSpellFromGrimoire(spell.slug, spell.name)}
+                                                                        className="bg-[#453745] hover:bg-[#FF1457] text-gray-200 hover:text-white py-1.5 px-3 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
+                                                                    >
+                                                                        <Trash2 size={14} /> {t.removeFromGrimoire}
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                             <SpellDetailsCard spell={spell} lang={lang} t={t} />
                                                         </div>
                                                     )}
