@@ -37,9 +37,17 @@ export const TrackerScreen = () => {
     };
 
     const sortTracker = () => {
-        const newTracker = [...tracker].map(e => ({...e, initiative: parseInt(e.initiative) || 0})).sort((a, b) => b.initiative - a.initiative);
+        const activeId = tracker[currentTurn]?.id;
+        const newTracker = [...tracker]
+            .map(e => ({ ...e, initiative: parseInt(e.initiative, 10) || 0 }))
+            .sort((a, b) => b.initiative - a.initiative);
         setTracker(newTracker);
-        setCurrentTurn(0);
+        if (activeId) {
+            const newIdx = newTracker.findIndex(e => e.id === activeId);
+            setCurrentTurn(newIdx !== -1 ? newIdx : (newTracker.length > 0 ? 0 : -1));
+        } else {
+            setCurrentTurn(newTracker.length > 0 ? 0 : -1);
+        }
     };
 
     const toggleCondition = (entityId, conditionId) => {
@@ -57,13 +65,14 @@ export const TrackerScreen = () => {
 
     const addPlayer = (e) => {
         e.preventDefault();
+        const safeHp = Math.max(1, parseInt(newHp, 10) || 10);
         const newEntity = {
             id: `custom-${Date.now()}`,
-            name: newName || "Player",
-            originalName: newName || "Player",
-            initiative: parseInt(newInit) || 0,
-            hp: parseInt(newHp) || 10,
-            maxHp: parseInt(newHp) || 10,
+            name: (newName || "").trim() || "Player",
+            originalName: (newName || "").trim() || "Player",
+            initiative: parseInt(newInit, 10) || 0,
+            hp: safeHp,
+            maxHp: safeHp,
             ac: 10,
             isPlayer: true,
             conditions: []

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { DICTIONARY } from '../src/constants/dictionary.js';
 import { XP_BUDGET_5E, CR_TO_XP, CONDITIONS } from '../src/constants/gameData.js';
 import { REFERENCE_DATA } from '../src/constants/referenceData.js';
-import { rollDice, parseCR, safeText, getDeepStat } from '../src/utils/helpers.js';
+import { rollDice, parseCR, safeText, getDeepStat, generateHomebrewSlug } from '../src/utils/helpers.js';
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
 import { calculateSpellPower, parseDiceAverage, SPELL_LEVEL_TABLE } from '../src/utils/spellCalculator.js';
@@ -94,7 +94,7 @@ test('3. Helpers Stress & Edge-Case Fuzzing (rollDice, parseCR, safeText, getDee
     assert.equal(safeText(undefined), '');
     assert.equal(safeText(42), '42');
     assert.equal(safeText({ name: 'Goblin' }), 'Goblin');
-    assert.equal(safeText([{ name: 'Fire' }, { desc: 'Cold' }, null, 'Acid']), 'Fire, Cold, , Acid');
+    assert.equal(safeText([{ name: 'Fire' }, { desc: 'Cold' }, null, 'Acid']), 'Fire, Cold, Acid');
 
     // getDeepStat edge cases
     assert.equal(getDeepStat(null, 'strength'), null);
@@ -311,6 +311,65 @@ test('10. Homebrew Spell Level Calculator Stress Test (DMG p. 283-284)', () => {
     assert.equal(manualLvl9.level, 9);
     assert.equal(manualLvl9.minCasterLevel, 17);
 });
+
+test('11. Extreme Chaos, Fuzzing & Absurd Inputs Stress Test', () => {
+    // 1. Circular object references, NaN, Infinity, -Infinity in safeText
+    const circular = { label: 'Circular' };
+    circular.self = circular;
+    assert.doesNotThrow(() => safeText(circular));
+    assert.equal(safeText(NaN), '');
+    assert.equal(safeText(Infinity), '');
+    assert.equal(safeText(-Infinity), '');
+    assert.equal(safeText([null, undefined, NaN, Infinity, circular, 'Valid']), `${JSON.stringify({ label: 'Circular' }).slice(0, 0)}Valid`.trim());
+
+    // 2. Billion-dice CPU DoS protection in rollDice & parseDiceAverage
+    const startMs = Date.now();
+    const hugeRoll = rollDice(999999999999, 999999999999);
+    assert.ok(Date.now() - startMs < 200, 'rollDice should cap absurd counts and return quickly');
+    assert.ok(Number.isFinite(hugeRoll) && hugeRoll > 0);
+
+    assert.equal(parseDiceAverage('5d0'), 0);
+    assert.equal(parseDiceAverage('-50d6'), 0);
+    assert.equal(parseDiceAverage('2d6 + 3 + 2 - 1'), 11);
+    assert.ok(Number.isFinite(parseDiceAverage('99999999999999999999999d99999999999999999999999 + 99999999999999')));
+    assert.equal(parseDiceAverage(null), 0);
+    assert.equal(parseDiceAverage(undefined), 0);
+    assert.equal(parseDiceAverage({}), 0);
+    assert.equal(parseDiceAverage(NaN), 0);
+    assert.equal(parseDiceAverage(Infinity), 0);
+
+    // 3. Division by zero, negative, and non-finite CRs in parseCR
+    assert.equal(parseCR('1/0'), 0);
+    assert.equal(parseCR('999/-5'), 0);
+    assert.equal(parseCR('-10'), 0);
+    assert.equal(parseCR(Infinity), 0);
+    assert.equal(parseCR(-Infinity), 0);
+    assert.equal(parseCR(NaN), 0);
+
+    // 4. Regex special characters / injection payloads in translators & bilingual search
+    const regexBomb = '[.*+?^${}()|[\\]\\\\] (Dragon) +9999999999999999999 ft.';
+    assert.doesNotThrow(() => translateName(regexBomb, 'pt'));
+    assert.doesNotThrow(() => translateSpellName(regexBomb, 'pt'));
+    assert.doesNotThrow(() => translateTerm(regexBomb, 'pt'));
+    assert.doesNotThrow(() => translateDescription(regexBomb, 'pt'));
+    assert.doesNotThrow(() => matchesBilingualSearch(regexBomb, regexBomb));
+    assert.doesNotThrow(() => getMonsterEnvironments({ name: regexBomb, type: circular, desc: circular, speed: circular }));
+
+    // 5. Absurd inputs into calculators & slug generator
+    const absurdSpell = calculateSpellPower({
+        autoLevel: true,
+        manualLevel: -9999,
+        damageDice: '9999999999999d9999999999999',
+        targetScope: 'unknown_scope',
+        effectTier: 999999,
+        halfOnSave: null
+    });
+    assert.ok(absurdSpell.level >= 0 && absurdSpell.level <= 9);
+
+    const slug = generateHomebrewSlug('!!!HB***', '   $$$???   ');
+    assert.ok(slug.startsWith('hb-custom-'));
+});
+
 
 
 

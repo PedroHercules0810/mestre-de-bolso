@@ -110,27 +110,41 @@ export const SPELL_LEVEL_TABLE = [
  * Calcula a média matemática de uma expressão de dados (ex: "8d6 + 4" -> 32)
  */
 export const parseDiceAverage = (diceStr) => {
-    if (!diceStr || typeof diceStr !== 'string') return 0;
+    if (diceStr === null || diceStr === undefined) return 0;
+    if (typeof diceStr === 'number') {
+        return Number.isFinite(diceStr) ? Math.max(0, Math.min(10000, diceStr)) : 0;
+    }
+    if (typeof diceStr !== 'string') return 0;
     const clean = diceStr.trim().toLowerCase();
-    const regex = /(\d+)\s*d\s*(\d+)/g;
+    if (!clean) return 0;
+
+    const regex = /([+-]?\s*\d+)\s*d\s*(\d+)/g;
     let totalAvg = 0;
     let matched = false;
     let match;
     while ((match = regex.exec(clean)) !== null) {
         matched = true;
-        const count = parseInt(match[1], 10) || 0;
-        const faces = parseInt(match[2], 10) || 0;
-        totalAvg += count * ((faces + 1) / 2);
+        const rawCount = parseInt(match[1].replace(/\s+/g, ''), 10) || 0;
+        const count = Math.max(-10000, Math.min(10000, rawCount));
+        const faces = Math.max(0, Math.min(1000000, parseInt(match[2], 10) || 0));
+        if (faces > 0 && count !== 0) {
+            totalAvg += count * ((faces + 1) / 2);
+        }
     }
-    const bonusMatch = clean.replace(regex, '').match(/([+-]\s*\d+)/);
-    if (bonusMatch) {
-        totalAvg += parseInt(bonusMatch[1].replace(/\s+/g, ''), 10) || 0;
+
+    const remainder = clean.replace(regex, '');
+    const flatRegex = /([+-]?\s*\d+(?:\.\d+)?)/g;
+    let flatMatch;
+    while ((flatMatch = flatRegex.exec(remainder)) !== null) {
+        const val = parseFloat(flatMatch[1].replace(/\s+/g, ''));
+        if (Number.isFinite(val)) {
+            totalAvg += val;
+            matched = true;
+        }
     }
-    if (!matched) {
-        const rawNum = parseFloat(clean);
-        return Number.isNaN(rawNum) ? 0 : Math.max(0, rawNum);
-    }
-    return Math.max(0, Math.round(totalAvg * 10) / 10);
+
+    if (!matched || !Number.isFinite(totalAvg)) return 0;
+    return Math.max(0, Math.min(100000, Math.round(totalAvg * 10) / 10));
 };
 
 /**

@@ -3,6 +3,7 @@ import {
   Trash2, Book, Swords, Shield, Sparkles, X, ArrowRight, Check, Edit3, Skull, Gem, Package, Flame
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { generateHomebrewSlug } from '../utils/helpers';
 import { calculateMonsterCR } from '../utils/crCalculator';
 import { calculateItemPower, RARITY_TABLE } from '../utils/itemCalculator';
 import { calculateSpellPower, SPELL_LEVEL_TABLE } from '../utils/spellCalculator';
@@ -300,7 +301,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
 
     const buildMonsterObject = () => {
         const cleanName = form.name.trim() || (lang === 'pt' ? 'Monstro Homebrew' : 'Homebrew Monster');
-        const slug = editingSlug || `hb-${cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+        const slug = editingSlug || generateHomebrewSlug('hb', cleanName);
         const wisMod = Math.floor(((parseInt(form.wis) || 10) - 10) / 2);
 
         return {
@@ -439,7 +440,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
 
     const buildItemObject = () => {
         const cleanName = itemForm.name.trim() || (lang === 'pt' ? 'Item Homebrew' : 'Homebrew Item');
-        const slug = editingItemSlug || `hb-item-${cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+        const slug = editingItemSlug || generateHomebrewSlug('hb-item', cleanName);
         const isWeapon = itemForm.category === 'Weapon';
         const isArmorOrShield = itemForm.category === 'Armor' || itemForm.category === 'Shield';
 
@@ -577,7 +578,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
         if (!spellForm.name.trim()) return;
 
         const cleanName = spellForm.name.trim();
-        const slug = editingSpellSlug || `hb-spell-${cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+        const slug = editingSpellSlug || generateHomebrewSlug('hb-spell', cleanName);
         const finalLevel = spellPowerResult.level;
 
         let autoDamageHeader = '';

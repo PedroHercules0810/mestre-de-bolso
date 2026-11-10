@@ -29,7 +29,8 @@ export const AppProvider = ({ children }) => {
   const [campaigns, setCampaigns] = useState(() => {
     try {
       const saved = localStorage.getItem('mestre_campaigns');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error("Failed to load campaigns", e);
       return [];
@@ -38,7 +39,8 @@ export const AppProvider = ({ children }) => {
   const [homebrewMonsters, setHomebrewMonsters] = useState(() => {
     try {
       const saved = localStorage.getItem('mestre_homebrew_monsters');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error("Failed to load homebrew monsters", e);
       return [];
@@ -47,7 +49,8 @@ export const AppProvider = ({ children }) => {
   const [homebrewItems, setHomebrewItems] = useState(() => {
     try {
       const saved = localStorage.getItem('mestre_homebrew_items');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error("Failed to load homebrew items", e);
       return [];
@@ -56,7 +59,8 @@ export const AppProvider = ({ children }) => {
   const [homebrewSpells, setHomebrewSpells] = useState(() => {
     try {
       const saved = localStorage.getItem('mestre_homebrew_spells');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error("Failed to load homebrew spells", e);
       return [];

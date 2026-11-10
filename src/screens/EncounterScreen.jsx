@@ -47,7 +47,7 @@ export const EncounterScreen = ({ onNavigate }) => {
 
   const renderEncounterLoot = (loot) => {
       if (!loot) return <p className="text-white text-xs">-</p>;
-      const coinsStr = Object.entries(loot.coins).map(([k,v]) => `${v} ${k}`).join(', ');
+      const coinsStr = Object.entries(loot.coins || {}).map(([k,v]) => `${v} ${k}`).join(', ');
       const itemsCount = loot.items ? loot.items.length : 0;
       return (
           <div className="text-right flex flex-col items-end">

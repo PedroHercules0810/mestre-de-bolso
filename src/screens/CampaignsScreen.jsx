@@ -200,14 +200,14 @@ export const CampaignsScreen = ({ onNavigate }) => {
 
     if (activeCampaign) {
         const notesList = (activeCampaign.notes || []).filter(n =>
-            n.title.toLowerCase().includes(searchNoteTerm.toLowerCase()) ||
-            n.content.toLowerCase().includes(searchNoteTerm.toLowerCase())
+            (n?.title || '').toLowerCase().includes(searchNoteTerm.toLowerCase()) ||
+            (n?.content || '').toLowerCase().includes(searchNoteTerm.toLowerCase())
         );
         const encountersList = activeCampaign.encounters || [];
         const rulesList = (activeCampaign.rules || []).filter(r =>
-            r.title.toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
-            (r.category || '').toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
-            (r.desc || '').toLowerCase().includes(searchRuleTerm.toLowerCase())
+            (r?.title || '').toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
+            (r?.category || '').toLowerCase().includes(searchRuleTerm.toLowerCase()) ||
+            (r?.desc || '').toLowerCase().includes(searchRuleTerm.toLowerCase())
         );
 
         return (
