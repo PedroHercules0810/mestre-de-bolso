@@ -53,6 +53,34 @@ Você pode baixar a versão mais recente do aplicativo compilado (`.apk`) direta
 
 ---
 
+## 🗺️ Roadmap
+
+Acompanhe o que já foi feito e o que vem por aí. Sugestões são bem-vindas nas [Issues](https://github.com/PedroHercules0810/mestre-de-bolso/issues)!
+
+### ✅ Concluído
+- [x] Bestiário offline com fichas completas (SRD 2024 / 5e)
+- [x] Gerador automático de encontros (XP, dificuldade, estilo, ambiente)
+- [x] Compêndio de itens + gerador de loot (Individual e Covil)
+- [x] Gerenciador de campanhas (anotações, encontros salvos, regras homebrew)
+- [x] Criador homebrew de monstros e itens com cálculo automático de ND/raridade
+- [x] Rastreador de combate com iniciativa e condições
+- [x] Escudo do Mestre (DM Screen)
+- [x] Motor híbrido de tradução PT-BR / EN com cache offline
+- [x] Build Android (APK nas Releases)
+
+### 🚧 Em desenvolvimento
+- [ ] Aba de magias
+- [ ] Homebrew de magias
+
+### 📌 Planejado
+- [ ] Backup / exportação e importação de campanhas
+- [ ] Gerador de NPCs (nomes, traços, motivações)
+- [ ] Rolador de dados integrado
+- [ ] Gerador de masmorras / locais
+- [ ] Publicação na Google Play
+
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Frontend:** [React 19](https://react.dev/) + [Vite 8](https://vitejs.dev/)
