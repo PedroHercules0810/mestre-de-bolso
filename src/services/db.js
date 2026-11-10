@@ -4,11 +4,12 @@ import { getMonsterEnvironments } from '../utils/environmentMapper';
 export const DB_NAME = 'QuickEncounterDB';
 export const STORE_MONSTERS = 'monsters';
 export const STORE_ITEMS = 'items';
+export const STORE_SPELLS = 'spells';
 export const STORE_TRANSLATIONS = 'translations';
 
 export const initDB = () => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 4);
+    const request = indexedDB.open(DB_NAME, 5);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_MONSTERS)) {
@@ -16,6 +17,9 @@ export const initDB = () => {
       }
       if (!db.objectStoreNames.contains(STORE_ITEMS)) {
         db.createObjectStore(STORE_ITEMS, { keyPath: 'slug' });
+      }
+      if (!db.objectStoreNames.contains(STORE_SPELLS)) {
+        db.createObjectStore(STORE_SPELLS, { keyPath: 'slug' });
       }
       if (!db.objectStoreNames.contains(STORE_TRANSLATIONS)) {
         db.createObjectStore(STORE_TRANSLATIONS, { keyPath: 'key' });
@@ -35,11 +39,11 @@ export const saveDataToDB = async (storeName, dataList) => {
     let count = 0;
     dataList.forEach(item => {
         if (storeName !== STORE_TRANSLATIONS) {
-            let uniqueSlug = item.slug;
+            let uniqueSlug = item.slug || item.key;
             if (!uniqueSlug) {
                 uniqueSlug = String(item.name || "unknown").toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                item.slug = uniqueSlug;
             }
+            item.slug = uniqueSlug;
         }
         
         if (storeName === STORE_MONSTERS) {

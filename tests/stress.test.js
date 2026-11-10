@@ -11,6 +11,8 @@ import { generateAdvancedLoot, generateEncounterLoot } from '../src/utils/lootGe
 import { getMonsterEnvironments, ENVIRONMENTS_LIST } from '../src/utils/environmentMapper.js';
 import {
     translateName,
+    translateSpellName,
+    SPELL_NAMES_DICT,
     translateTerm,
     translateDescription,
     matchesBilingualSearch,
@@ -164,7 +166,8 @@ test('5. Homebrew Item Power & Rarity Calculator Stress Test', () => {
 
 test('6. Translator Engine & Word-Boundary Safety Tests', () => {
     // Word-boundary protection: "Sacred" or "Reduced" must NOT have "red" turned into "Vermelho"
-    assert.equal(translateName('Sacred Flame', 'pt'), 'Sacred Flame');
+    assert.equal(translateName('Sacred Flame', 'pt'), 'Chama Sagrada');
+    assert.equal(translateName('Sacred Guardian', 'pt'), 'Sacred Guardian');
     assert.equal(translateName('Reduced Threat Goblin', 'pt'), 'Reduced Threat Goblin');
 
     // Compound Dragon names
@@ -266,4 +269,26 @@ test('8. Environment Mapper Stress Test (Open5e v2 Empty Environments Compatibil
         assert.notEqual(translateTerm(env, 'pt'), env, `Environment ${env} should be translated to PT`);
     }
 });
+
+test('9. Grimoire D&D 5.5e (SRD 2024) Spells Dictionary & Class/School Translation Stress Test', () => {
+    const spellEntries = Object.entries(SPELL_NAMES_DICT);
+    assert.ok(spellEntries.length >= 339, `Expected at least 339 SRD 2024 spells, got ${spellEntries.length}`);
+
+    assert.equal(translateSpellName('Fireball', 'pt'), 'Bola de Fogo');
+    assert.equal(translateSpellName('Shield', 'pt'), 'Escudo Arcano');
+    assert.equal(translateSpellName('Cure Wounds', 'pt'), 'Curar Ferimentos');
+    assert.equal(translateSpellName('Eldritch Blast', 'pt'), 'Rajada Mística');
+    assert.equal(translateSpellName('Wish', 'pt'), 'Desejo');
+
+    const classes = ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard'];
+    for (const cls of classes) {
+        assert.notEqual(translateTerm(cls, 'pt'), cls, `Class ${cls} should translate to PT`);
+    }
+
+    const schools = ['Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
+    for (const school of schools) {
+        assert.notEqual(translateTerm(school, 'pt'), school, `School ${school} should translate to PT`);
+    }
+});
+
 

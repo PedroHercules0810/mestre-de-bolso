@@ -1,9 +1,9 @@
 import React from 'react';
-import { Skull, Package, Settings, RotateCcw, Download, Info } from 'lucide-react';
+import { Skull, Package, Sparkles, Settings, RotateCcw, Download, Info } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 export const MenuScreen = () => {
-    const { lang, setLang, t, monsters, items, isSyncing, syncData, debugLogs } = useAppContext();
+    const { lang, setLang, t, monsters, items, spells, isSyncing, syncData, debugLogs } = useAppContext();
     
     return (
       <div className="p-4 pb-8 max-w-lg mx-auto space-y-4 animate-in fade-in">
@@ -13,20 +13,27 @@ export const MenuScreen = () => {
             <p className="text-gray-400 text-xs">Abra o menu lateral (≡) no canto superior esquerdo para navegar.</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-            <div className="bg-gradient-to-br from-[#613C4C] to-[#453745] p-4 rounded-2xl border border-[#FF1457]/30 shadow-lg flex items-center justify-between">
+        <div className="grid grid-cols-3 gap-2">
+            <div className="bg-gradient-to-br from-[#613C4C] to-[#453745] p-3.5 rounded-2xl border border-[#FF1457]/30 shadow-lg flex items-center justify-between">
                 <div>
                     <h3 className="text-xl font-black text-white">{monsters.length}</h3>
                     <p className="text-[10px] text-gray-300 font-semibold uppercase">{lang === 'pt' ? 'Monstros' : 'Monsters'}</p>
                 </div>
-                <Skull size={24} className="text-[#FF1457]/50" />
+                <Skull size={22} className="text-[#FF1457]/50" />
             </div>
-            <div className="bg-gradient-to-br from-[#613C4C] to-[#453745] p-4 rounded-2xl border border-[#FF1457]/30 shadow-lg flex items-center justify-between">
+            <div className="bg-gradient-to-br from-[#613C4C] to-[#453745] p-3.5 rounded-2xl border border-[#FF1457]/30 shadow-lg flex items-center justify-between">
                 <div>
                     <h3 className="text-xl font-black text-white">{items.length}</h3>
                     <p className="text-[10px] text-gray-300 font-semibold uppercase">{lang === 'pt' ? 'Itens' : 'Items'}</p>
                 </div>
-                <Package size={24} className="text-[#FF1457]/50" />
+                <Package size={22} className="text-[#FF1457]/50" />
+            </div>
+            <div className="bg-gradient-to-br from-[#613C4C] to-[#453745] p-3.5 rounded-2xl border border-[#FF1457]/30 shadow-lg flex items-center justify-between">
+                <div>
+                    <h3 className="text-xl font-black text-white">{spells ? spells.length : 0}</h3>
+                    <p className="text-[10px] text-gray-300 font-semibold uppercase">{t.spells}</p>
+                </div>
+                <Sparkles size={22} className="text-[#FF1457]/50" />
             </div>
         </div>
 
@@ -45,12 +52,15 @@ export const MenuScreen = () => {
                 </div>
                 <div>
                     <label className="text-xs text-gray-400 font-semibold mb-2 block uppercase">Databases (Offline Cache)</label>
-                    <div className="flex gap-2 mb-2">
-                        <button onClick={() => syncData('monsters')} disabled={isSyncing} className={`flex-1 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all text-xs ${isSyncing ? 'bg-[#453745] text-gray-500 cursor-not-allowed' : 'bg-[#2B2C30] border border-[#FF1457]/50 hover:bg-[#453745] text-white'}`}>
-                            {isSyncing ? <RotateCcw size={16} className="animate-spin" /> : <Download size={16} />} {isSyncing ? t.syncing : t.syncBestiary}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                        <button onClick={() => syncData('monsters')} disabled={isSyncing} className={`font-bold py-3 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all text-xs ${isSyncing ? 'bg-[#453745] text-gray-500 cursor-not-allowed' : 'bg-[#2B2C30] border border-[#FF1457]/50 hover:bg-[#453745] text-white'}`}>
+                            {isSyncing ? <RotateCcw size={15} className="animate-spin" /> : <Download size={15} />} {isSyncing ? t.syncing : t.syncBestiary}
                         </button>
-                        <button onClick={() => syncData('items')} disabled={isSyncing} className={`flex-1 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all text-xs ${isSyncing ? 'bg-[#453745] text-gray-500 cursor-not-allowed' : 'bg-[#2B2C30] border border-[#FF1457]/50 hover:bg-[#453745] text-white'}`}>
-                            {isSyncing ? <RotateCcw size={16} className="animate-spin" /> : <Download size={16} />} {isSyncing ? t.syncing : t.syncItems}
+                        <button onClick={() => syncData('items')} disabled={isSyncing} className={`font-bold py-3 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all text-xs ${isSyncing ? 'bg-[#453745] text-gray-500 cursor-not-allowed' : 'bg-[#2B2C30] border border-[#FF1457]/50 hover:bg-[#453745] text-white'}`}>
+                            {isSyncing ? <RotateCcw size={15} className="animate-spin" /> : <Download size={15} />} {isSyncing ? t.syncing : t.syncItems}
+                        </button>
+                        <button onClick={() => syncData('spells')} disabled={isSyncing} className={`font-bold py-3 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all text-xs ${isSyncing ? 'bg-[#453745] text-gray-500 cursor-not-allowed' : 'bg-[#2B2C30] border border-[#FF1457]/50 hover:bg-[#453745] text-white'}`}>
+                            {isSyncing ? <RotateCcw size={15} className="animate-spin" /> : <Download size={15} />} {isSyncing ? t.syncing : t.syncSpells}
                         </button>
                     </div>
                     

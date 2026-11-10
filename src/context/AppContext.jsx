@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { DICTIONARY } from '../constants/dictionary';
 import { XP_BUDGET_5E } from '../constants/gameData';
-import { STORE_MONSTERS, STORE_ITEMS, saveDataToDB, getAllDataFromDB, deleteDataFromDB } from '../services/db';
+import { STORE_MONSTERS, STORE_ITEMS, STORE_SPELLS, saveDataToDB, getAllDataFromDB, deleteDataFromDB } from '../services/db';
 import { initTranslationCache } from '../services/translatorService';
 import { safeText, getDeepStat } from '../utils/helpers';
 import { translateName } from '../utils/translators';
@@ -16,6 +16,7 @@ export const AppProvider = ({ children }) => {
   const [lang, setLang] = useState('pt');
   const [monsters, setMonsters] = useState([]);
   const [items, setItems] = useState([]);
+  const [spells, setSpells] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
   const [itemsTab, setItemsTab] = useState('compendium'); 
@@ -102,7 +103,11 @@ export const AppProvider = ({ children }) => {
       const sortedItems = itemData.sort((a, b) => (safeText(a.name) > safeText(b.name)) ? 1 : -1);
       setItems(sortedItems);
 
-      addLog(`Cache carregado: ${sortedMonsters.length} monstros, ${sortedItems.length} itens, ${transCount} traduções.`);
+      const spellData = await getAllDataFromDB(STORE_SPELLS);
+      const sortedSpells = spellData.sort((a, b) => (safeText(a.name) > safeText(b.name)) ? 1 : -1);
+      setSpells(sortedSpells);
+
+      addLog(`Cache carregado: ${sortedMonsters.length} monstros, ${sortedItems.length} itens, ${sortedSpells.length} magias, ${transCount} traduções.`);
     } catch (e) {
       console.error("Cache Error:", e);
       addLog("Erro crítico ao carregar cache local.");
@@ -146,6 +151,10 @@ export const AppProvider = ({ children }) => {
                  let url = `https://api.open5e.com/v1/${ep}/?limit=100`;
                  while (url) { url = await fetchPageAndSave(url, STORE_ITEMS); }
              }
+        } else if (type === 'spells') {
+             addLog("Iniciando sync do Grimório (D&D 5.5e / SRD 2024)...");
+             let url = 'https://api.open5e.com/v2/spells/?document__key__in=srd-2024&limit=100';
+             while (url) { url = await fetchPageAndSave(url, STORE_SPELLS); }
         }
         addLog(`Sincronização concluída!`);
         await loadCache();
@@ -458,7 +467,7 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      lang, setLang, t, monsters, items, syncData, isSyncing, debugLogs, addLog,
+      lang, setLang, t, monsters, items, spells, syncData, isSyncing, debugLogs, addLog,
       generateEncounter, encounter, setEncounter, encounterError, setEncounterError,
       addMonsterToEncounter, updateMonsterCount, addDirectlyToTracker,
       tracker, setTracker, addToTracker, currentTurn, setCurrentTurn, round, setRound,

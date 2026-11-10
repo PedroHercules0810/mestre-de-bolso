@@ -78,7 +78,15 @@ export const DICTIONARY = {
     inCompendium: "In Compendium", removeFromCompendium: "Remove from Compendium",
     homebrewItemSaved: "Homebrew item saved!", sentToCompendiumToast: "sent to Compendium!",
     removedFromCompendiumToast: "removed from Compendium!", noHomebrewItems: "No Homebrew items created yet.",
-    deleteHomebrewItemConfirm: "Delete this Homebrew item? (It will also be removed from the Compendium)"
+    deleteHomebrewItemConfirm: "Delete this Homebrew item? (It will also be removed from the Compendium)",
+    grimoire: "Grimoire", spells: "Spells", syncSpells: "Update Grimoire",
+    searchSpells: "Search spells...", noSpells: "No spells match the selected filters.",
+    noSpellsCache: "No spells found in offline cache. Click below to download D&D 5.5e (SRD 2024) spells!",
+    anyLevel: "Any Level", anyClass: "Any Class", cantrips: "Cantrips (Level 0)",
+    spellLevel: "Level", castingTime: "Casting Time", range: "Range",
+    components: "Components", duration: "Duration", concentration: "Concentration",
+    ritual: "Ritual", higherLevels: "Using a Higher-Level Spell Slot",
+    spellClasses: "Classes", expandAllLevels: "Expand All", collapseAllLevels: "Minimize All"
   },
   pt: {
     generator: "Gerador", encounter: "Encontro", tracker: "Combate", settings: "Sincronização", library: "Escudo do Mestre",
@@ -159,6 +167,14 @@ export const DICTIONARY = {
     inCompendium: "No Compêndio", removeFromCompendium: "Remover do Compêndio",
     homebrewItemSaved: "Item Homebrew salvo!", sentToCompendiumToast: "enviado para o Compêndio!",
     removedFromCompendiumToast: "removido do Compêndio!", noHomebrewItems: "Nenhum item Homebrew criado ainda.",
-    deleteHomebrewItemConfirm: "Excluir este item Homebrew? (Ele também será removido do Compêndio)"
+    deleteHomebrewItemConfirm: "Excluir este item Homebrew? (Ele também será removido do Compêndio)",
+    grimoire: "Grimório", spells: "Magias", syncSpells: "Atualizar Grimório",
+    searchSpells: "Buscar magias...", noSpells: "Nenhuma magia corresponde aos filtros selecionados.",
+    noSpellsCache: "Nenhuma magia salva no cache offline. Clique abaixo para baixar as 339 magias do D&D 5.5e (SRD 2024)!",
+    anyLevel: "Qualquer Nível", anyClass: "Qualquer Classe", cantrips: "Truques (Nível 0)",
+    spellLevel: "Círculo", castingTime: "Tempo de Conjuração", range: "Alcance",
+    components: "Componentes", duration: "Duração", concentration: "Concentração",
+    ritual: "Ritual", higherLevels: "Em Círculos Superiores",
+    spellClasses: "Classes", expandAllLevels: "Expandir Todos", collapseAllLevels: "Minimizar Todos"
   }
 };

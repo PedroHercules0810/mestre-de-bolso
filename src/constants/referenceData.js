@@ -31,6 +31,16 @@ export const REFERENCE_DATA = {
         { name: "Concentration (C)", desc: "Requires you to maintain focus. Taking damage requires a CON save (DC 10 or half damage taken, whichever is higher). Casting another concentration spell ends the current one." },
         { name: "Ritual (R)", desc: "Can be cast as a ritual if you have the feature. Takes 10 minutes longer to cast but doesn't expend a spell slot." }
     ]},
+    { title: "Schools of Magic", items: [
+        { name: "Abjuration", desc: "Protective spells that create magical barriers, negate harmful effects, ward locations against trespassers, or banish creatures to other planes of existence (e.g., Shield, Counterspell, Banishment)." },
+        { name: "Conjuration", desc: "Spells that transport objects and creatures from one location to another (teleportation) or summon creatures and matter out of thin air (e.g., Misty Step, Mage Hand, Find Familiar)." },
+        { name: "Divination", desc: "Spells that reveal information, whether in the form of secrets long forgotten, glimpses of the future, the locations of hidden things, or supernatural perception (e.g., Detect Magic, Identify, Scrying)." },
+        { name: "Enchantment", desc: "Spells that affect the minds of others, influencing or controlling their behavior, inspiring allies, or clouding enemies' thoughts (e.g., Charm Person, Hold Person, Suggestion)." },
+        { name: "Evocation", desc: "Spells that manipulate raw magical energy to produce a desired effect—unleashing blasts of fire or lightning, or channeling positive energy to heal wounds (e.g., Fireball, Cure Wounds, Magic Missile)." },
+        { name: "Illusion", desc: "Spells that deceive the senses or minds of others, causing creatures to see phantoms, hear imaginary sounds, or fail to notice real things (e.g., Invisibility, Major Image, Mirror Image)." },
+        { name: "Necromancy", desc: "Spells that manipulate the energies of life and death, draining vital force, afflicting foes with decay, or restoring life to the fallen (e.g., Inflict Wounds, Animate Dead, Revivify)." },
+        { name: "Transmutation", desc: "Spells that change the physical properties of a creature, object, or environment—transforming shapes, enhancing speed, or granting flight (e.g., Polymorph, Haste, Fly)." }
+    ]},
     { title: "Movement & Environment", items: [
         { name: "Difficult Terrain", desc: "Moving 1 foot in difficult terrain costs 2 feet of speed." },
         { name: "Crawling, Climbing, Swimming", desc: "Each foot of movement costs 1 extra foot (2 extra feet in difficult terrain), unless you have a specific speed for it." },
@@ -89,6 +99,16 @@ export const REFERENCE_DATA = {
     { title: "Tags de Magia", items: [
         { name: "Concentração (C)", desc: "Exige foco constante. Sofrer dano exige um teste de resistência de CON (CD 10 ou metade do dano sofrido, o que for maior). Conjurar outra magia de concentração encerra a atual." },
         { name: "Ritual (R)", desc: "Pode ser conjurada como ritual se você tiver a característica. Demora 10 minutos a mais para conjurar, mas não gasta um espaço de magia." }
+    ]},
+    { title: "Escolas de Magia", items: [
+        { name: "Abjuração", desc: "Magias de proteção que criam barreiras mágicas, anulam efeitos nocivos, protegem locais contra invasores ou banem criaturas para outros planos de existência (ex.: Escudo Arcano, Contramágica, Banimento)." },
+        { name: "Conjuração", desc: "Magias que transportam objetos e criaturas de um local para outro (teletransporte) ou invocam criaturas e matéria a partir do nada (ex.: Passo Nebuloso, Mãos Mágicas, Encontrar Familiar)." },
+        { name: "Adivinhação", desc: "Magias que revelam informações, seja na forma de segredos há muito esquecidos, vislumbres do futuro, localização de coisas ocultas ou percepção sobrenatural (ex.: Detectar Magia, Identificação, Vidência)." },
+        { name: "Encantamento", desc: "Magias que afetam a mente de outros seres, influenciando ou controlando seu comportamento, inspirando aliados ou confundindo inimigos (ex.: Enfeitiçar Pessoa, Imobilizar Pessoa, Sugestão)." },
+        { name: "Evocação", desc: "Magias que manipulam energia mágica bruta para produzir um efeito desejado — disparando explosões de fogo ou relâmpago, ou canalizando energia positiva para curar ferimentos (ex.: Bola de Fogo, Curar Ferimentos, Mísseis Mágicos)." },
+        { name: "Ilusão", desc: "Magias que enganam os sentidos ou a mente de outros, fazendo criaturas verem miragens, ouvirem sons imaginários ou deixarem de notar coisas reais (ex.: Invisibilidade, Imagem Maior, Reflexos)." },
+        { name: "Necromancia", desc: "Magias que manipulam as energias da vida e da morte, drenando força vital, afligindo inimigos com definhamento, erguendo mortos-vivos ou devolvendo a vida aos caídos (ex.: Infligir Ferimentos, Animar Mortos, Revivificar)." },
+        { name: "Transmutação", desc: "Magias que alteram as propriedades físicas de uma criatura, objeto ou ambiente — transformando formas, ampliando a velocidade ou concedendo voo (ex.: Polimorfia, Velocidade, Voo)." }
     ]},
     { title: "Movimento & Ambiente", items: [
         { name: "Terreno Difícil", desc: "Mover-se 1,5m em terreno difícil custa 3m de deslocamento (o dobro)." },

@@ -11,6 +11,7 @@ import { CampaignsScreen } from './screens/CampaignsScreen';
 import { BestiaryScreen } from './screens/BestiaryScreen';
 import { HomebrewScreen } from './screens/HomebrewScreen';
 import { ItemsScreen } from './screens/ItemsScreen';
+import { GrimoireScreen } from './screens/GrimoireScreen';
 import { DMScreenTab } from './screens/DMScreenTab';
 import { MenuScreen } from './screens/MenuScreen';
 
@@ -48,6 +49,7 @@ const AppContent = () => {
         {currentRoute === 'bestiary' && <BestiaryScreen />}
         {currentRoute === 'homebrew' && <HomebrewScreen onNavigate={setCurrentRoute} />}
         {currentRoute === 'items' && <ItemsScreen />}
+        {currentRoute === 'grimoire' && <GrimoireScreen />}
         {currentRoute === 'library' && <DMScreenTab />}
         {currentRoute === 'menu' && <MenuScreen />}
       </main>
