@@ -67,15 +67,18 @@ Acompanhe o que já foi feito e o que vem por aí. Sugestões são bem-vindas na
 - [x] Escudo do Mestre (DM Screen)
 - [x] Motor híbrido de tradução PT-BR / EN com cache offline
 - [x] Build Android (APK nas Releases)
+- [x] Aba de magias
+- [x] Homebrew de magias
 
 ### 🚧 Em desenvolvimento
-- [ ] Aba de magias
-- [ ] Homebrew de magias
+- [ ] Rolador de dados integrado
+- [ ] Criador de fichas de personagens e NPC
+- [ ] Classes e Homebrew de classes
+- [ ] Raças e homebrew de raças
+- [ ] Switch entre metros e pés
 
 ### 📌 Planejado
 - [ ] Backup / exportação e importação de campanhas
-- [ ] Gerador de NPCs (nomes, traços, motivações)
-- [ ] Rolador de dados integrado
 - [ ] Gerador de masmorras / locais
 - [ ] Publicação na Google Play
 

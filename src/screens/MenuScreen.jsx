@@ -79,7 +79,6 @@ export const MenuScreen = () => {
             <p className="text-[10px] text-gray-400 mb-4">{t.creditsText}</p>
             <div className="border-t border-[#453745] pt-4 mt-2">
                 <p className="text-sm font-bold text-[#FF1457] mb-2">{t.creator}</p>
-                <p className="text-[10px] text-gray-500 leading-relaxed mb-1">{t.aiDisclaimer}</p>
                 <a href={`mailto:${t.email}`} className="text-xs font-bold text-[#FF1457] hover:text-white transition-colors inline-flex items-center gap-1">{t.email}</a>
             </div>
         </div>
