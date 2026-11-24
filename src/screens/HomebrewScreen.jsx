@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Trash2, Book, Swords, Shield, Sparkles, X, ArrowRight, Check, Edit3, Skull, Gem, Package, Flame
+  Trash2, Book, Swords, Shield, Sparkles, X, ArrowRight, Check, Edit3, Skull, Gem, Package, Flame, Award
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { generateHomebrewSlug } from '../utils/helpers';
@@ -11,6 +11,7 @@ import { translateTerm } from '../utils/translators';
 import { StatBlock } from '../components/StatBlock';
 import { renderItemDetails } from '../components/ItemDetails';
 import { SpellDetailsCard } from '../components/SpellDetails';
+import { HomebrewClassCreator } from '../components/HomebrewClassCreator';
 
 const SIZES = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
 const TYPES = ['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead'];
@@ -675,12 +676,12 @@ export const HomebrewScreen = ({ onNavigate }) => {
 
     return (
         <div className="p-4 pb-8 max-w-lg mx-auto animate-in fade-in">
-            {/* Seletor Superior de Modo Homebrew: Monstros vs Itens vs Magias */}
-            <div className="grid grid-cols-3 gap-1.5 mb-4 bg-[#2B2C30] p-1.5 rounded-2xl border border-[#453745] shadow-md">
+            {/* Seletor Superior de Modo Homebrew: Monstros vs Itens vs Magias vs Classes */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-4 bg-[#2B2C30] p-1.5 rounded-2xl border border-[#453745] shadow-md">
                 <button
                     type="button"
                     onClick={() => setHomebrewCategory('monsters')}
-                    className={`py-3 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                    className={`py-2.5 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                         homebrewCategory === 'monsters'
                             ? 'bg-gradient-to-r from-[#FF1457] to-[#613C4C] text-white shadow-lg shadow-[#FF1457]/25'
                             : 'bg-[#35313B] text-gray-400 hover:text-white'
@@ -691,7 +692,7 @@ export const HomebrewScreen = ({ onNavigate }) => {
                 <button
                     type="button"
                     onClick={() => setHomebrewCategory('items')}
-                    className={`py-3 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                    className={`py-2.5 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                         homebrewCategory === 'items'
                             ? 'bg-gradient-to-r from-[#FF1457] to-[#613C4C] text-white shadow-lg shadow-[#FF1457]/25'
                             : 'bg-[#35313B] text-gray-400 hover:text-white'
@@ -702,13 +703,24 @@ export const HomebrewScreen = ({ onNavigate }) => {
                 <button
                     type="button"
                     onClick={() => setHomebrewCategory('spells')}
-                    className={`py-3 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                    className={`py-2.5 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                         homebrewCategory === 'spells'
                             ? 'bg-gradient-to-r from-[#FF1457] to-[#613C4C] text-white shadow-lg shadow-[#FF1457]/25'
                             : 'bg-[#35313B] text-gray-400 hover:text-white'
                     }`}
                 >
                     <Flame size={15} /> {t.homebrewSpellsTab}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setHomebrewCategory('classes')}
+                    className={`py-2.5 px-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                        homebrewCategory === 'classes'
+                            ? 'bg-gradient-to-r from-[#FF1457] to-[#613C4C] text-white shadow-lg shadow-[#FF1457]/25'
+                            : 'bg-[#35313B] text-gray-400 hover:text-white'
+                    }`}
+                >
+                    <Award size={15} /> {t.homebrewClassesTab}
                 </button>
             </div>
 
@@ -2038,6 +2050,11 @@ export const HomebrewScreen = ({ onNavigate }) => {
                     )}
                 </div>
             )}
+
+            {/* ============================================================== */}
+            {/* ABA 4: CRIADOR DE CLASSES HOMEBREW                             */}
+            {/* ============================================================== */}
+            {homebrewCategory === 'classes' && <HomebrewClassCreator />}
 
             {/* Modal de Confirmação de Exclusão de Monstro Homebrew */}
             {confirmDeleteSlug && (

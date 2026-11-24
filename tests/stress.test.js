@@ -9,6 +9,13 @@ import { rollDice, parseCR, safeText, getDeepStat, generateHomebrewSlug } from '
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
 import { calculateSpellPower, parseDiceAverage, SPELL_LEVEL_TABLE } from '../src/utils/spellCalculator.js';
+import {
+    createDefault20Levels,
+    buildHomebrewClassData,
+    getHitPointsDescription,
+    getCasterSlotForLevel,
+    getProfBonusForLevel
+} from '../src/utils/classCreatorUtils.js';
 import { generateAdvancedLoot, generateEncounterLoot } from '../src/utils/lootGenerator.js';
 import { getMonsterEnvironments, ENVIRONMENTS_LIST } from '../src/utils/environmentMapper.js';
 import {
@@ -393,6 +400,38 @@ test('12. D&D 5.5e (SRD 2024) Classes Data Completeness & Level 1-20 Progression
         }
     }
 });
+
+test('13. Homebrew Class Creator & 20-Level Table Generator Stress Test', () => {
+    const defaultLevels = createDefault20Levels('pt');
+    assert.equal(defaultLevels.length, 20);
+    assert.equal(getProfBonusForLevel(1), '+2');
+    assert.equal(getProfBonusForLevel(5), '+3');
+    assert.equal(getProfBonusForLevel(17), '+6');
+    assert.ok(getHitPointsDescription('d12', 'Caçador', 'pt').includes('1d12'));
+    assert.ok(getCasterSlotForLevel('full', 20).includes('9º:1'));
+    assert.ok(getCasterSlotForLevel('half', 20).includes('5º:2'));
+    assert.ok(getCasterSlotForLevel('pact', 17).includes('4 (5º)'));
+
+    const builtClass = buildHomebrewClassData({
+        name: 'Caçador de Sangue',
+        tagline: 'Guerreiro hemocraft',
+        subclass: 'Ordem do Lobo',
+        hitDie: 'd10',
+        primaryAbility: 'Destreza e Inteligência',
+        savingThrows: ['Destreza', 'Inteligência'],
+        casterType: 'third',
+        customColumns: [{ key: 'col_1', label: 'Dado Hemocraft' }],
+        levels: defaultLevels
+    }, null, generateHomebrewSlug);
+
+    assert.equal(builtClass.isHomebrew, true);
+    assert.equal(builtClass.hitDie, 'd10');
+    assert.equal(builtClass.levels.length, 20);
+    assert.equal(builtClass.extraColumns.length, 2); // 1 custom + 1 _auto_slots
+    assert.equal(builtClass.levels[0].extra.col_1, '1d4');
+    assert.equal(builtClass.levels[19].extra._auto_slots, '1º:4 · 2º:3 · 3º:3 · 4º:1');
+});
+
 
 
 

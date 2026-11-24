@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     Shield, Swords, Flame, Sparkles, BookOpen, Heart, Award, Search, X,
-    ChevronDown, ChevronRight, Table, Layers, Compass, Skull, Crown
+    ChevronDown, ChevronRight, Table, Layers, Compass, Skull, Crown, Trash2
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { CLASSES_DATA } from '../constants/classesData';
@@ -22,15 +22,16 @@ const CLASS_ICONS = {
 };
 
 export const ClassesScreen = () => {
-    const { lang, t } = useAppContext();
+    const { lang, t, compendiumClasses, removeClassFromCompendium } = useAppContext();
     const [selectedClassId, setSelectedClassId] = useState('barbarian');
     const [searchTerm, setSearchTerm] = useState('');
     const [levelFilter, setLevelFilter] = useState('Any');
     const [showTable, setShowTable] = useState(true);
     const [collapsedLevels, setCollapsedLevels] = useState({});
 
-    const activeClass = CLASSES_DATA.find(c => c.id === selectedClassId) || CLASSES_DATA[0];
-    const ActiveIcon = CLASS_ICONS[activeClass.id] || Shield;
+    const allClasses = [...CLASSES_DATA, ...(Array.isArray(compendiumClasses) ? compendiumClasses : [])];
+    const activeClass = allClasses.find(c => c.id === selectedClassId) || allClasses[0];
+    const ActiveIcon = CLASS_ICONS[activeClass.id] || Award;
 
     const toggleLevelSection = (lvl) => {
         setCollapsedLevels(prev => ({
@@ -69,19 +70,19 @@ export const ClassesScreen = () => {
 
     return (
         <div className="p-4 pb-10 max-w-lg mx-auto space-y-4 animate-in fade-in">
-            {/* Grade Seletora das 12 Classes D&D 5.5e */}
+            {/* Grade Seletora das Classes D&D 5.5e + Homebrew */}
             <div className="bg-[#35313B] p-3 rounded-2xl border border-[#453745] shadow-md">
                 <div className="flex items-center justify-between mb-2.5 px-1">
                     <span className="text-[10px] font-black uppercase tracking-widest text-[#FF1457] flex items-center gap-1.5">
                         <Award size={13} /> {lang === 'pt' ? 'Classes D&D 5.5e (2024)' : 'D&D 5.5e Classes (2024)'}
                     </span>
                     <span className="text-[10px] text-gray-400 font-bold">
-                        12 {lang === 'pt' ? 'Classes' : 'Classes'}
+                        {allClasses.length} {lang === 'pt' ? 'Classes' : 'Classes'}
                     </span>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-                    {CLASSES_DATA.map(cls => {
-                        const IconComp = CLASS_ICONS[cls.id] || Shield;
+                    {allClasses.map(cls => {
+                        const IconComp = CLASS_ICONS[cls.id] || Award;
                         const isSelected = cls.id === activeClass.id;
                         return (
                             <button
@@ -98,7 +99,14 @@ export const ClassesScreen = () => {
                                 }`}
                             >
                                 <div className="flex items-center justify-between w-full mb-1">
-                                    <IconComp size={14} className={isSelected ? 'text-white' : 'text-[#FF1457]'} />
+                                    <div className="flex items-center gap-1">
+                                        <IconComp size={14} className={isSelected ? 'text-white' : 'text-[#FF1457]'} />
+                                        {cls.isHomebrew && (
+                                            <span className="text-[8px] font-black bg-[#FF1457] text-white px-1 rounded">
+                                                HB
+                                            </span>
+                                        )}
+                                    </div>
                                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
                                         isSelected ? 'bg-black/30 text-white' : 'bg-[#35313B] text-gray-400'
                                     }`}>
@@ -106,7 +114,7 @@ export const ClassesScreen = () => {
                                     </span>
                                 </div>
                                 <div className="font-bold text-[11px] leading-tight truncate w-full">
-                                    {cls.name[lang]}
+                                    {cls.name[lang] || cls.name.pt}
                                 </div>
                             </button>
                         );
@@ -123,17 +131,36 @@ export const ClassesScreen = () => {
                                 <ActiveIcon size={20} />
                             </span>
                             <div>
-                                <h2 className="text-xl font-black text-white tracking-tight leading-none">
-                                    {activeClass.name[lang]}
-                                </h2>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h2 className="text-xl font-black text-white tracking-tight leading-none">
+                                        {activeClass.name[lang] || activeClass.name.pt}
+                                    </h2>
+                                    {activeClass.isHomebrew && (
+                                        <span className="text-[9px] font-black bg-[#FF1457]/20 text-[#FF1457] px-2 py-0.5 rounded-full border border-[#FF1457]/40 uppercase">
+                                            Homebrew
+                                        </span>
+                                    )}
+                                </div>
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#FF1457]">
-                                    {activeClass.core.subclass[lang]}
+                                    {activeClass.core.subclass[lang] || activeClass.core.subclass.pt}
                                 </span>
                             </div>
                         </div>
                         <p className="text-xs text-gray-300 mt-2.5 leading-relaxed">
-                            {activeClass.tagline[lang]}
+                            {activeClass.tagline[lang] || activeClass.tagline.pt}
                         </p>
+                        {activeClass.isHomebrew && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    removeClassFromCompendium(activeClass.id, activeClass.name);
+                                    setSelectedClassId('barbarian');
+                                }}
+                                className="mt-2.5 bg-[#2B2C30] hover:bg-[#FF1457] text-gray-300 hover:text-white border border-[#453745] py-1.5 px-3 rounded-lg font-bold text-[11px] inline-flex items-center gap-1.5 transition-colors"
+                            >
+                                <Trash2 size={13} /> {t.removeFromClasses}
+                            </button>
+                        )}
                     </div>
                     <div className="bg-[#2B2C30] px-3 py-2 rounded-xl border border-[#FF1457]/40 text-center shrink-0">
                         <div className="text-base font-black text-[#FF1457] leading-none">{activeClass.hitDie}</div>

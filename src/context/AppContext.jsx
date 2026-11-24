@@ -66,6 +66,26 @@ export const AppProvider = ({ children }) => {
       return [];
     }
   });
+  const [homebrewClasses, setHomebrewClasses] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_homebrew_classes');
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error("Failed to load homebrew classes", e);
+      return [];
+    }
+  });
+  const [compendiumClasses, setCompendiumClasses] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_compendium_classes');
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error("Failed to load compendium classes", e);
+      return [];
+    }
+  });
 
   useEffect(() => {
     try {
@@ -98,6 +118,22 @@ export const AppProvider = ({ children }) => {
       console.error("Failed to save homebrew spells", e);
     }
   }, [homebrewSpells]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_homebrew_classes', JSON.stringify(homebrewClasses));
+    } catch (e) {
+      console.error("Failed to save homebrew classes", e);
+    }
+  }, [homebrewClasses]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_compendium_classes', JSON.stringify(compendiumClasses));
+    } catch (e) {
+      console.error("Failed to save compendium classes", e);
+    }
+  }, [compendiumClasses]);
   
   const [debugLogs, setDebugLogs] = useState(["[SISTEMA] Aguardando ações..."]);
   const t = DICTIONARY[lang];
@@ -513,6 +549,29 @@ export const AppProvider = ({ children }) => {
       }
   };
 
+  const sendHomebrewToClasses = (classObj) => {
+      const toSave = { ...classObj, isHomebrew: true };
+      setCompendiumClasses(prev => {
+          const exists = prev.some(c => c.id === toSave.id);
+          if (exists) {
+              return prev.map(c => c.id === toSave.id ? toSave : c);
+          }
+          return [...prev, toSave];
+      });
+      const clsName = typeof classObj.name === 'object' ? (classObj.name.pt || classObj.name.en) : classObj.name;
+      showToast(`${safeText(clsName)} ${t.sentToClassesToast}`);
+      return true;
+  };
+
+  const removeClassFromCompendium = (classId, className = "") => {
+      setCompendiumClasses(prev => prev.filter(c => c.id !== classId));
+      if (className) {
+          const clsName = typeof className === 'object' ? (className.pt || className.en) : className;
+          showToast(`${safeText(clsName)} ${t.removedFromClassesToast}`);
+      }
+      return true;
+  };
+
   return (
     <AppContext.Provider value={{
       lang, setLang, t, monsters, items, spells, syncData, isSyncing, debugLogs, addLog,
@@ -524,6 +583,7 @@ export const AppProvider = ({ children }) => {
       homebrewMonsters, setHomebrewMonsters, sendHomebrewToBestiary, removeMonsterFromBestiary,
       homebrewItems, setHomebrewItems, sendHomebrewToItems, removeItemFromCompendium,
       homebrewSpells, setHomebrewSpells, sendHomebrewToGrimoire, removeSpellFromGrimoire,
+      homebrewClasses, setHomebrewClasses, compendiumClasses, sendHomebrewToClasses, removeClassFromCompendium,
       showToast
     }}>
       {children}
