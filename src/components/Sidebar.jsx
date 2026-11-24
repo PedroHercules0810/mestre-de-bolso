@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { 
   Skull, Book, Dices, Swords, Package, Search, Gem, Shield, 
-  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight, Sparkles, Flame 
+  BookOpen, Settings, RotateCcw, ScrollText, X, ArrowRight, Sparkles, Flame, Award 
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 export const Sidebar = ({ isOpen, onClose, onNavigate, currentRoute, t, lang }) => {
     const { itemsTab, setItemsTab } = useAppContext();
-    const [expanded, setExpanded] = useState({ monsters: true, items: true, spells: true, dm: true, system: true });
+    const [expanded, setExpanded] = useState({ monsters: true, items: true, spells: true, classes: true, dm: true, system: true });
 
     const toggleCategory = (cat) => setExpanded(prev => ({ ...prev, [cat]: !prev[cat] }));
 
@@ -37,6 +37,12 @@ export const Sidebar = ({ isOpen, onClose, onNavigate, currentRoute, t, lang }) 
             id: 'spells', label: t.spells, icon: Flame,
             sub: [
                 { id: 'grimoire', label: t.grimoire, icon: Flame }
+            ]
+        },
+        {
+            id: 'classes', label: t.classesMenu, icon: Award,
+            sub: [
+                { id: 'classes', label: t.classesMenu, icon: Award }
             ]
         },
         {

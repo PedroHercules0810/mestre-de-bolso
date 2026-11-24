@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { DICTIONARY } from '../src/constants/dictionary.js';
 import { XP_BUDGET_5E, CR_TO_XP, CONDITIONS } from '../src/constants/gameData.js';
 import { REFERENCE_DATA } from '../src/constants/referenceData.js';
+import { CLASSES_DATA } from '../src/constants/classesData.js';
 import { rollDice, parseCR, safeText, getDeepStat, generateHomebrewSlug } from '../src/utils/helpers.js';
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
@@ -369,6 +370,30 @@ test('11. Extreme Chaos, Fuzzing & Absurd Inputs Stress Test', () => {
     const slug = generateHomebrewSlug('!!!HB***', '   $$$???   ');
     assert.ok(slug.startsWith('hb-custom-'));
 });
+
+test('12. D&D 5.5e (SRD 2024) Classes Data Completeness & Level 1-20 Progression Stress Test', () => {
+    assert.equal(CLASSES_DATA.length, 12, 'Must contain all 12 official D&D 5.5e classes');
+
+    for (const cls of CLASSES_DATA) {
+        assert.ok(cls.id && cls.name?.pt && cls.name?.en, `Missing class name for ${cls.id}`);
+        assert.ok(cls.tagline?.pt && cls.tagline?.en, `Missing tagline for ${cls.id}`);
+        assert.ok(['d6', 'd8', 'd10', 'd12'].includes(cls.hitDie), `Invalid hitDie for ${cls.id}`);
+        assert.ok(cls.core?.primaryAbility?.pt && cls.core?.savingThrows?.pt, `Missing core traits for ${cls.id}`);
+        assert.ok(Array.isArray(cls.extraColumns) && cls.extraColumns.length >= 2, `Missing extra columns for ${cls.id}`);
+        assert.equal(cls.levels.length, 20, `Class ${cls.id} must have exactly 20 levels`);
+
+        for (let i = 0; i < 20; i++) {
+            const lvlObj = cls.levels[i];
+            assert.equal(lvlObj.level, i + 1, `Level mismatch at index ${i} of ${cls.id}`);
+            assert.ok(lvlObj.profBonus.startsWith('+'), `Missing profBonus at level ${lvlObj.level} of ${cls.id}`);
+            assert.ok(Array.isArray(lvlObj.features) && lvlObj.features.length > 0, `Empty features at level ${lvlObj.level} of ${cls.id}`);
+            for (const feat of lvlObj.features) {
+                assert.ok(feat.name?.pt && feat.name?.en && feat.desc?.pt && feat.desc?.en, `Incomplete feature at level ${lvlObj.level} of ${cls.id}`);
+            }
+        }
+    }
+});
+
 
 
 

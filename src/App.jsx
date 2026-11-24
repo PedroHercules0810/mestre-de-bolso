@@ -12,6 +12,7 @@ import { BestiaryScreen } from './screens/BestiaryScreen';
 import { HomebrewScreen } from './screens/HomebrewScreen';
 import { ItemsScreen } from './screens/ItemsScreen';
 import { GrimoireScreen } from './screens/GrimoireScreen';
+import { ClassesScreen } from './screens/ClassesScreen';
 import { DMScreenTab } from './screens/DMScreenTab';
 import { MenuScreen } from './screens/MenuScreen';
 
@@ -50,6 +51,7 @@ const AppContent = () => {
         {currentRoute === 'homebrew' && <HomebrewScreen onNavigate={setCurrentRoute} />}
         {currentRoute === 'items' && <ItemsScreen />}
         {currentRoute === 'grimoire' && <GrimoireScreen />}
+        {currentRoute === 'classes' && <ClassesScreen />}
         {currentRoute === 'library' && <DMScreenTab />}
         {currentRoute === 'menu' && <MenuScreen />}
       </main>

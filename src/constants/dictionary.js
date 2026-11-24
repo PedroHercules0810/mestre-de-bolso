@@ -99,7 +99,8 @@ export const DICTIONARY = {
     inGrimoire: "In Grimoire", removeFromGrimoire: "Remove from Grimoire",
     homebrewSpellSaved: "Homebrew spell saved!", sentToGrimoireToast: "sent to Grimoire!",
     removedFromGrimoireToast: "removed from Grimoire!", noHomebrewSpells: "No Homebrew spells created yet.",
-    deleteHomebrewSpellConfirm: "Delete this Homebrew spell? (It will also be removed from the Grimoire)"
+    deleteHomebrewSpellConfirm: "Delete this Homebrew spell? (It will also be removed from the Grimoire)",
+    classesMenu: "Classes"
   },
   pt: {
     generator: "Gerador", encounter: "Encontro", tracker: "Combate", settings: "Sincronização", library: "Escudo do Mestre",
@@ -127,7 +128,7 @@ export const DICTIONARY = {
     budgetTooLow: "O orçamento é muito baixo para gerar monstros. Tente aumentar o Ajuste de Orçamento.",
     noMonsters: "Nenhum monstro corresponde aos filtros selecionados.", noItems: "Nenhum item encontrado.",
     forceGenerate: "Gerar Mesmo Assim (Risco de TPK 💀)", cancel: "Cancelar", error: "Falha na Geração",
-    creator: "Criado por: Pedro Hércues", aiDisclaimer: "Este aplicativo foi gerado com IA e pode apresentar problemas. Caso encontre erros, entre em contato:", email: "pedrosouzagrangeiro@gmail.com",
+    creator: "Criado por: Pedro Hércues", email: "pedrosouzagrangeiro@gmail.com",
     addedToEncounter: "adicionado ao Encontro!", addedToTracker: "enviado para o Combate!",
     lootGenTitle: "Gerador de Loot", compendiumTitle: "Compêndio",
     lootTier: "Nível (Tier)", lootType: "Tipo de Tesouro",
@@ -201,6 +202,7 @@ export const DICTIONARY = {
     inGrimoire: "No Grimório", removeFromGrimoire: "Remover do Grimório",
     homebrewSpellSaved: "Magia Homebrew salva!", sentToGrimoireToast: "enviada para o Grimório!",
     removedFromGrimoireToast: "removida do Grimório!", noHomebrewSpells: "Nenhuma magia Homebrew criada ainda.",
-    deleteHomebrewSpellConfirm: "Excluir esta magia Homebrew? (Ela também será removida do Grimório)"
+    deleteHomebrewSpellConfirm: "Excluir esta magia Homebrew? (Ela também será removida do Grimório)",
+    classesMenu: "Classes"
   }
 };
