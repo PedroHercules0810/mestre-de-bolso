@@ -3,7 +3,7 @@ import {
     Dices, Plus, Minus, RotateCcw, Trash2, Sparkles, Skull, History, Play
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { DICE_TYPES, executeDicePoolRoll, formatPoolFormula } from '../utils/diceRoller';
+import { DICE_TYPES, executeDicePoolRoll, formatPoolFormula, generateRollId } from '../utils/diceRoller';
 
 const INITIAL_POOL = { 4: 0, 6: 0, 8: 0, 10: 0, 12: 0, 20: 1, 100: 0 };
 
@@ -73,7 +73,7 @@ export const DiceRollerScreen = () => {
 
         const enriched = {
             ...result,
-            id: `roll-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            id: generateRollId(),
             poolSnapshot: { ...effectivePool },
             formulaPt: formatPoolFormula(effectivePool, customMod, customMode, 'pt'),
             formulaEn: formatPoolFormula(effectivePool, customMod, customMode, 'en')

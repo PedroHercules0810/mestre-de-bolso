@@ -18,6 +18,9 @@ export const rollSingleDie = (sides, rng = Math.random) => {
     return Math.floor(rng() * s) + 1;
 };
 
+export const generateRollId = () =>
+    `roll-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
 /**
  * Formata a string da fórmula da parada de dados (ex: "1d20 + 2d6 + 1d8 + 4")
  */
