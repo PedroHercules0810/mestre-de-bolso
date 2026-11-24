@@ -69,12 +69,13 @@ Acompanhe o que já foi feito e o que vem por aí. Sugestões são bem-vindas na
 - [x] Build Android (APK nas Releases)
 - [x] Aba de magias
 - [x] Homebrew de magias
-- [x] Criador de fichas de personagens e NPC
 - [x] Switch entre metros e pés
+- [x] Classes e Homebrew de classes
 
 ### 🚧 Em desenvolvimento
+
+- [ ] Criador de fichas de personagens e NPC
 - [ ] Rolador de dados integrado
-- [ ] Classes e Homebrew de classes
 - [ ] Raças e homebrew de raças
 
 

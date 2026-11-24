@@ -48,6 +48,7 @@ export const Sidebar = ({ isOpen, onClose, onNavigate, currentRoute, t, lang }) 
         {
             id: 'dm', label: lang === 'pt' ? 'Mestre (DM)' : 'Dungeon Master', icon: Shield,
             sub: [
+                { id: 'dice', label: t.diceRollerMenu, icon: Dices },
                 { id: 'campaigns', label: t.campaigns, icon: ScrollText },
                 { id: 'homebrew', label: t.homebrew, icon: Sparkles },
                 { id: 'tracker', label: t.tracker, icon: Shield },

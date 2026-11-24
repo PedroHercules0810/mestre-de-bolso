@@ -16,6 +16,7 @@ import {
     getCasterSlotForLevel,
     getProfBonusForLevel
 } from '../src/utils/classCreatorUtils.js';
+import { executeDicePoolRoll, formatPoolFormula, DICE_TYPES } from '../src/utils/diceRoller.js';
 import { generateAdvancedLoot, generateEncounterLoot } from '../src/utils/lootGenerator.js';
 import { getMonsterEnvironments, ENVIRONMENTS_LIST } from '../src/utils/environmentMapper.js';
 import {
@@ -447,6 +448,50 @@ test('14. Distance Unit Converter (Meters vs Feet) Stress Test', () => {
     assert.equal(formatDistanceUnits('a até 18m de você', 'ft'), 'a até 60 ft. de você');
     assert.equal(formatDistanceUnits('1,5m de alcance', 'ft'), '5 ft. de alcance');
 });
+
+test('15. Polyhedral Dice Roller (Mixed Pools, Advantage & Disadvantage) Stress Test', () => {
+    assert.equal(DICE_TYPES.length, 7);
+    assert.equal(formatPoolFormula({ 20: 1, 6: 2, 8: 1 }, 4, 'advantage', 'pt'), '1d20 + 1d8 + 2d6 + 4 (Vantagem)');
+    assert.equal(formatPoolFormula({ 20: 1 }, -2, 'disadvantage', 'en'), '1d20 - 2 (Disadvantage)');
+
+    // Deterministic RNG test for Advantage vs Disadvantage
+    const seq = [0.1, 0.95]; // on d20: 0.1 -> 3, 0.95 -> 20
+    let idx = 0;
+    const mockRngAdv = () => seq[idx++ % seq.length];
+
+    const advRoll = executeDicePoolRoll({
+        pool: { 20: 1 },
+        modifier: 5,
+        rollMode: 'advantage',
+        rng: mockRngAdv
+    });
+    assert.equal(advRoll.diceSubtotal, 20);
+    assert.equal(advRoll.total, 25);
+    assert.equal(advRoll.isCritSuccess, true);
+    assert.equal(advRoll.groups[0].rolls[0].droppedValue, 3);
+
+    idx = 0;
+    const disRoll = executeDicePoolRoll({
+        pool: { 20: 1 },
+        modifier: 5,
+        rollMode: 'disadvantage',
+        rng: mockRngAdv
+    });
+    assert.equal(disRoll.diceSubtotal, 3);
+    assert.equal(disRoll.total, 8);
+    assert.equal(disRoll.groups[0].rolls[0].droppedValue, 20);
+
+    // Mixed pool stress test (1d20 + 4d6 + 2d8 + 1d12 + 1d4)
+    const mixedRoll = executeDicePoolRoll({
+        pool: { 20: 1, 12: 1, 8: 2, 6: 4, 4: 1 },
+        modifier: 3,
+        rollMode: 'normal'
+    });
+    assert.equal(mixedRoll.groups.length, 5);
+    assert.equal(mixedRoll.allKeptRolls.length, 9);
+    assert.ok(mixedRoll.total >= 12 && mixedRoll.total <= 83);
+});
+
 
 
 

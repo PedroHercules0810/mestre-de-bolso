@@ -119,7 +119,13 @@ export const DICTIONARY = {
     homebrewClassSaved: "Homebrew class saved!", sentToClassesToast: "sent to Classes!",
     removedFromClassesToast: "removed from Classes!",
     deleteHomebrewClassConfirm: "Delete this Homebrew class? (It will also be removed from the Classes tab)",
-    unitSystemLabel: "Distance Unit", metersOption: "Meters (m)", feetOption: "Feet (ft.)"
+    unitSystemLabel: "Distance Unit", metersOption: "Meters (m)", feetOption: "Feet (ft.)",
+    diceRollerMenu: "Dice Roller", diceRollerTitle: "Polyhedral Dice Roller",
+    rollResultTotal: "Total Result", rollModeLabel: "Roll Mode (d20 / Pool)",
+    normalRoll: "Normal", advantage: "Advantage", disadvantage: "Disadvantage",
+    buildDicePool: "Select Dice (Mix & Match)", clearDicePool: "Clear",
+    diceModifierLabel: "Bonus / Penalty Modifier", rollDiceBtn: "Roll Dice",
+    rollHistoryTitle: "Recent Rolls"
   },
   pt: {
     generator: "Gerador", encounter: "Encontro", tracker: "Combate", settings: "Sincronização", library: "Escudo do Mestre",
@@ -241,6 +247,12 @@ export const DICTIONARY = {
     homebrewClassSaved: "Classe Homebrew salva!", sentToClassesToast: "enviada para a aba Classes!",
     removedFromClassesToast: "removida da aba Classes!",
     deleteHomebrewClassConfirm: "Excluir esta classe Homebrew? (Ela também será removida da aba Classes)",
-    unitSystemLabel: "Unidade de Medida", metersOption: "Metros (m)", feetOption: "Pés (ft.)"
+    unitSystemLabel: "Unidade de Medida", metersOption: "Metros (m)", feetOption: "Pés (ft.)",
+    diceRollerMenu: "Rolador de Dados", diceRollerTitle: "Rolador de Dados Poliedrais",
+    rollResultTotal: "Resultado Total", rollModeLabel: "Modo de Rolagem",
+    normalRoll: "Normal", advantage: "Vantagem", disadvantage: "Desvantagem",
+    buildDicePool: "Monte sua Parada de Dados", clearDicePool: "Limpar",
+    diceModifierLabel: "Modificador (Bônus / Penalidade)", rollDiceBtn: "Rolar Dados",
+    rollHistoryTitle: "Histórico de Rolagens"
   }
 };

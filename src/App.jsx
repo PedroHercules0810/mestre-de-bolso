@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu as MenuIcon } from 'lucide-react';
+import { Menu as MenuIcon, Dices } from 'lucide-react';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sidebar } from './components/Sidebar';
@@ -13,6 +13,7 @@ import { HomebrewScreen } from './screens/HomebrewScreen';
 import { ItemsScreen } from './screens/ItemsScreen';
 import { GrimoireScreen } from './screens/GrimoireScreen';
 import { ClassesScreen } from './screens/ClassesScreen';
+import { DiceRollerScreen } from './screens/DiceRollerScreen';
 import { DMScreenTab } from './screens/DMScreenTab';
 import { MenuScreen } from './screens/MenuScreen';
 
@@ -30,7 +31,17 @@ const AppContent = () => {
         <h1 className="text-xl font-black text-[#FF1457] tracking-tight leading-none text-center flex-1">
             MESTRE DE BOLSO
         </h1>
-        <div className="w-10"></div>
+        <button
+            onClick={() => setCurrentRoute('dice')}
+            title={t.diceRollerMenu}
+            className={`p-2 -mr-2 rounded-lg transition-colors ${
+                currentRoute === 'dice'
+                    ? 'bg-[#FF1457]/20 text-[#FF1457] border border-[#FF1457]/40'
+                    : 'text-gray-300 hover:text-[#FF1457] hover:bg-[#453745]'
+            }`}
+        >
+            <Dices size={22} />
+        </button>
       </header>
       
       <Sidebar 
@@ -52,6 +63,7 @@ const AppContent = () => {
         {currentRoute === 'items' && <ItemsScreen />}
         {currentRoute === 'grimoire' && <GrimoireScreen />}
         {currentRoute === 'classes' && <ClassesScreen />}
+        {currentRoute === 'dice' && <DiceRollerScreen />}
         {currentRoute === 'library' && <DMScreenTab />}
         {currentRoute === 'menu' && <MenuScreen />}
       </main>
