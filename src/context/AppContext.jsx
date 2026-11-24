@@ -13,7 +13,22 @@ export const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
-  const [lang, setLang] = useState('pt');
+  const [lang, setLang] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_lang');
+      return saved === 'en' || saved === 'pt' ? saved : 'pt';
+    } catch {
+      return 'pt';
+    }
+  });
+  const [unitSystem, setUnitSystem] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mestre_unit_system');
+      return saved === 'ft' || saved === 'm' ? saved : 'm';
+    } catch {
+      return 'm';
+    }
+  });
   const [monsters, setMonsters] = useState([]);
   const [items, setItems] = useState([]);
   const [spells, setSpells] = useState([]);
@@ -86,6 +101,22 @@ export const AppProvider = ({ children }) => {
       return [];
     }
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_lang', lang);
+    } catch (e) {
+      console.error("Failed to save language", e);
+    }
+  }, [lang]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mestre_unit_system', unitSystem);
+    } catch (e) {
+      console.error("Failed to save unit system", e);
+    }
+  }, [unitSystem]);
 
   useEffect(() => {
     try {
@@ -574,7 +605,7 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      lang, setLang, t, monsters, items, spells, syncData, isSyncing, debugLogs, addLog,
+      lang, setLang, unitSystem, setUnitSystem, t, monsters, items, spells, syncData, isSyncing, debugLogs, addLog,
       generateEncounter, encounter, setEncounter, encounterError, setEncounterError,
       addMonsterToEncounter, updateMonsterCount, addDirectlyToTracker,
       tracker, setTracker, addToTracker, currentTurn, setCurrentTurn, round, setRound,

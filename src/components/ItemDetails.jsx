@@ -1,10 +1,12 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { safeText } from '../utils/helpers';
+import { useAppContext } from '../context/AppContext';
+import { safeText, formatDistanceUnits } from '../utils/helpers';
 import { translateName, translateTerm } from '../utils/translators';
 import { useSmartDescription } from '../services/translatorService';
 
 export const ItemDetailsCard = ({ item, lang }) => {
+    const { unitSystem = 'm' } = useAppContext() || {};
     const rawDesc = safeText(item.desc);
     const { text: translatedDesc, isNeural } = useSmartDescription(rawDesc, lang);
 
@@ -57,7 +59,7 @@ export const ItemDetailsCard = ({ item, lang }) => {
             
             {translatedDesc && (
                 <div className="whitespace-pre-wrap leading-relaxed text-gray-300 text-xs">
-                    {translatedDesc.replace(/\*\*/g, '')}
+                    {formatDistanceUnits(translatedDesc.replace(/\*\*/g, ''), unitSystem)}
                 </div>
             )}
         </div>

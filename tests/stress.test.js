@@ -5,7 +5,7 @@ import { DICTIONARY } from '../src/constants/dictionary.js';
 import { XP_BUDGET_5E, CR_TO_XP, CONDITIONS } from '../src/constants/gameData.js';
 import { REFERENCE_DATA } from '../src/constants/referenceData.js';
 import { CLASSES_DATA } from '../src/constants/classesData.js';
-import { rollDice, parseCR, safeText, getDeepStat, generateHomebrewSlug } from '../src/utils/helpers.js';
+import { rollDice, parseCR, safeText, getDeepStat, generateHomebrewSlug, formatDistanceUnits } from '../src/utils/helpers.js';
 import { calculateMonsterCR, CR_TABLE } from '../src/utils/crCalculator.js';
 import { calculateItemPower, RARITY_TABLE } from '../src/utils/itemCalculator.js';
 import { calculateSpellPower, parseDiceAverage, SPELL_LEVEL_TABLE } from '../src/utils/spellCalculator.js';
@@ -431,6 +431,23 @@ test('13. Homebrew Class Creator & 20-Level Table Generator Stress Test', () => 
     assert.equal(builtClass.levels[0].extra.col_1, '1d4');
     assert.equal(builtClass.levels[19].extra._auto_slots, '1º:4 · 2º:3 · 3º:3 · 4º:1');
 });
+
+test('14. Distance Unit Converter (Meters vs Feet) Stress Test', () => {
+    // Meters mode ('m')
+    assert.equal(formatDistanceUnits('30 ft.', 'm'), '9m');
+    assert.equal(formatDistanceUnits('15 feet', 'm'), '4,5m');
+    assert.equal(formatDistanceUnits('30 ft. (9m)', 'm'), '9m');
+    assert.equal(formatDistanceUnits('+4,5m (15 ft.)', 'm'), '+4,5m');
+    assert.equal(formatDistanceUnits('alcance 80/320 ft.', 'm'), 'alcance 24/96m');
+
+    // Feet mode ('ft')
+    assert.equal(formatDistanceUnits('30 ft. (9m)', 'ft'), '30 ft.');
+    assert.equal(formatDistanceUnits('+4,5m (15 ft.)', 'ft'), '+15 ft.');
+    assert.equal(formatDistanceUnits('9 metros (30 ft.)', 'ft'), '30 ft.');
+    assert.equal(formatDistanceUnits('a até 18m de você', 'ft'), 'a até 60 ft. de você');
+    assert.equal(formatDistanceUnits('1,5m de alcance', 'ft'), '5 ft. de alcance');
+});
+
 
 
 

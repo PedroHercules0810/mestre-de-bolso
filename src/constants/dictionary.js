@@ -118,7 +118,8 @@ export const DICTIONARY = {
     inClassesCompendium: "In Classes", removeFromClasses: "Remove from Classes",
     homebrewClassSaved: "Homebrew class saved!", sentToClassesToast: "sent to Classes!",
     removedFromClassesToast: "removed from Classes!",
-    deleteHomebrewClassConfirm: "Delete this Homebrew class? (It will also be removed from the Classes tab)"
+    deleteHomebrewClassConfirm: "Delete this Homebrew class? (It will also be removed from the Classes tab)",
+    unitSystemLabel: "Distance Unit", metersOption: "Meters (m)", feetOption: "Feet (ft.)"
   },
   pt: {
     generator: "Gerador", encounter: "Encontro", tracker: "Combate", settings: "Sincronização", library: "Escudo do Mestre",
@@ -239,6 +240,7 @@ export const DICTIONARY = {
     inClassesCompendium: "Em Classes", removeFromClasses: "Remover de Classes",
     homebrewClassSaved: "Classe Homebrew salva!", sentToClassesToast: "enviada para a aba Classes!",
     removedFromClassesToast: "removida da aba Classes!",
-    deleteHomebrewClassConfirm: "Excluir esta classe Homebrew? (Ela também será removida da aba Classes)"
+    deleteHomebrewClassConfirm: "Excluir esta classe Homebrew? (Ela também será removida da aba Classes)",
+    unitSystemLabel: "Unidade de Medida", metersOption: "Metros (m)", feetOption: "Pés (ft.)"
   }
 };

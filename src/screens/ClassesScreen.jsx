@@ -4,6 +4,7 @@ import {
     ChevronDown, ChevronRight, Table, Layers, Compass, Skull, Crown, Trash2
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { formatDistanceUnits } from '../utils/helpers';
 import { CLASSES_DATA } from '../constants/classesData';
 
 const CLASS_ICONS = {
@@ -22,7 +23,7 @@ const CLASS_ICONS = {
 };
 
 export const ClassesScreen = () => {
-    const { lang, t, compendiumClasses, removeClassFromCompendium } = useAppContext();
+    const { lang, unitSystem = 'm', t, compendiumClasses, removeClassFromCompendium } = useAppContext();
     const [selectedClassId, setSelectedClassId] = useState('barbarian');
     const [searchTerm, setSearchTerm] = useState('');
     const [levelFilter, setLevelFilter] = useState('Any');
@@ -309,7 +310,7 @@ export const ClassesScreen = () => {
                                                 key={col.key}
                                                 className="py-2 px-2 text-center font-bold text-gray-300 whitespace-nowrap"
                                             >
-                                                {row.extra[col.key] || '—'}
+                                                {formatDistanceUnits(row.extra[col.key] || '—', unitSystem)}
                                             </td>
                                         ))}
                                     </tr>
@@ -429,7 +430,7 @@ export const ClassesScreen = () => {
                                                 className="text-[10px] font-bold bg-[#35313B] text-gray-300 px-2.5 py-1 rounded-lg border border-[#453745]"
                                             >
                                                 <strong className="text-[#FF1457]">{col.label[lang]}:</strong>{' '}
-                                                {lvlObj.extra[col.key] || '—'}
+                                                {formatDistanceUnits(lvlObj.extra[col.key] || '—', unitSystem)}
                                             </span>
                                         ))}
                                     </div>
@@ -441,10 +442,10 @@ export const ClassesScreen = () => {
                                         >
                                             <h5 className="font-bold text-white text-sm flex items-center gap-1.5">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-[#FF1457]" />
-                                                {feat.name[lang]}
+                                                {formatDistanceUnits(feat.name[lang], unitSystem)}
                                             </h5>
                                             <p className="text-xs text-gray-300 leading-relaxed">
-                                                {feat.desc[lang]}
+                                                {formatDistanceUnits(feat.desc[lang], unitSystem)}
                                             </p>
                                         </div>
                                     ))}

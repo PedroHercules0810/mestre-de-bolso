@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
-import { safeText, getDeepStat } from '../utils/helpers';
+import { useAppContext } from '../context/AppContext';
+import { safeText, getDeepStat, formatDistanceUnits } from '../utils/helpers';
 import {
     translateName,
     translateTerm,
@@ -12,6 +13,7 @@ import {
 import { useMonsterNeuralTranslation } from '../services/translatorService';
 
 export const StatBlock = ({ monster, lang }) => {
+  const { unitSystem = 'm' } = useAppContext() || {};
   const { isTranslating } = useMonsterNeuralTranslation(monster, lang);
 
   const getMod = (score) => {
@@ -34,10 +36,7 @@ export const StatBlock = ({ monster, lang }) => {
               .join(' • ');
       }
   }
-  speedText = speedText.replace(/(\d+)\s*(ft\.?|feet)/gi, (match, p1) => {
-      const meters = Math.round((parseInt(p1) / 5) * 1.5);
-      return `${p1} ft. (${meters}m)`;
-  });
+  speedText = formatDistanceUnits(speedText, unitSystem);
 
   const formatUsageLimits = (usage) => {
       if (!usage || typeof usage !== 'object') return '';
@@ -98,7 +97,7 @@ export const StatBlock = ({ monster, lang }) => {
 
   const formatRichDesc = (text) => {
       if (!text) return null;
-      const translatedText = translateDescription(safeText(text), lang);
+      const translatedText = formatDistanceUnits(translateDescription(safeText(text), lang), unitSystem);
       const lines = translatedText.split('\n');
       return lines.map((line, i) => (
           <React.Fragment key={i}>
@@ -191,7 +190,7 @@ export const StatBlock = ({ monster, lang }) => {
           </p>
           <p>
               <span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Deslocamento' : 'Speed'}:</span>{' '}
-              {speedText || '30 ft. (9m)'}
+              {speedText || formatDistanceUnits('30 ft.', unitSystem)}
           </p>
       </div>
 
@@ -225,10 +224,10 @@ export const StatBlock = ({ monster, lang }) => {
               {monster.passive_perception && (
                   <p>
                       <span className="font-bold text-[#FF1457]">{lang === 'pt' ? 'Sentidos' : 'Senses'}:</span>{' '}
-                      {monster.blindsight_range ? `${lang === 'pt' ? 'Percepção às Cegas' : 'Blindsight'} ${monster.blindsight_range} ft., ` : ''}
-                      {monster.darkvision_range ? `${lang === 'pt' ? 'Visão no Escuro' : 'Darkvision'} ${monster.darkvision_range} ft., ` : ''}
-                      {monster.tremorsense_range ? `${lang === 'pt' ? 'Sentido Sísmico' : 'Tremorsense'} ${monster.tremorsense_range} ft., ` : ''}
-                      {monster.truesight_range ? `${lang === 'pt' ? 'Visão Verdadeira' : 'Truesight'} ${monster.truesight_range} ft., ` : ''}
+                      {monster.blindsight_range ? `${lang === 'pt' ? 'Percepção às Cegas' : 'Blindsight'} ${formatDistanceUnits(`${monster.blindsight_range} ft.`, unitSystem)}, ` : ''}
+                      {monster.darkvision_range ? `${lang === 'pt' ? 'Visão no Escuro' : 'Darkvision'} ${formatDistanceUnits(`${monster.darkvision_range} ft.`, unitSystem)}, ` : ''}
+                      {monster.tremorsense_range ? `${lang === 'pt' ? 'Sentido Sísmico' : 'Tremorsense'} ${formatDistanceUnits(`${monster.tremorsense_range} ft.`, unitSystem)}, ` : ''}
+                      {monster.truesight_range ? `${lang === 'pt' ? 'Visão Verdadeira' : 'Truesight'} ${formatDistanceUnits(`${monster.truesight_range} ft.`, unitSystem)}, ` : ''}
                       {lang === 'pt' ? 'Percepção Passiva' : 'Passive Perception'} {monster.passive_perception}
                   </p>
               )}

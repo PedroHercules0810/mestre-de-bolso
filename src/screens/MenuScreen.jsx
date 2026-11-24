@@ -3,7 +3,7 @@ import { Skull, Package, Flame, Settings, RotateCcw, Download, Info } from 'luci
 import { useAppContext } from '../context/AppContext';
 
 export const MenuScreen = () => {
-    const { lang, setLang, t, monsters, items, spells, isSyncing, syncData, debugLogs } = useAppContext();
+    const { lang, setLang, unitSystem, setUnitSystem, t, monsters, items, spells, isSyncing, syncData, debugLogs } = useAppContext();
     
     return (
       <div className="p-4 pb-8 max-w-lg mx-auto space-y-4 animate-in fade-in">
@@ -48,6 +48,13 @@ export const MenuScreen = () => {
                     <div className="flex gap-2">
                         <button onClick={() => setLang('en')} className={`flex-1 py-2 rounded-lg font-bold border transition-colors ${lang === 'en' ? 'bg-[#FF1457] border-[#FF1457] text-white shadow-inner' : 'bg-[#2B2C30] border-[#453745] text-gray-400 hover:text-white'}`}>English</button>
                         <button onClick={() => setLang('pt')} className={`flex-1 py-2 rounded-lg font-bold border transition-colors ${lang === 'pt' ? 'bg-[#FF1457] border-[#FF1457] text-white shadow-inner' : 'bg-[#2B2C30] border-[#453745] text-gray-400 hover:text-white'}`}>Português</button>
+                    </div>
+                </div>
+                <div>
+                    <label className="text-xs text-gray-400 font-semibold mb-2 block uppercase">{t.unitSystemLabel}</label>
+                    <div className="flex gap-2">
+                        <button onClick={() => setUnitSystem('m')} className={`flex-1 py-2 rounded-lg font-bold border transition-colors ${unitSystem === 'm' ? 'bg-[#FF1457] border-[#FF1457] text-white shadow-inner' : 'bg-[#2B2C30] border-[#453745] text-gray-400 hover:text-white'}`}>{t.metersOption}</button>
+                        <button onClick={() => setUnitSystem('ft')} className={`flex-1 py-2 rounded-lg font-bold border transition-colors ${unitSystem === 'ft' ? 'bg-[#FF1457] border-[#FF1457] text-white shadow-inner' : 'bg-[#2B2C30] border-[#453745] text-gray-400 hover:text-white'}`}>{t.feetOption}</button>
                     </div>
                 </div>
                 <div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, Clock, Compass, Layers, Hourglass } from 'lucide-react';
-import { safeText } from '../utils/helpers';
+import { useAppContext } from '../context/AppContext';
+import { safeText, formatDistanceUnits } from '../utils/helpers';
 import { translateSpellName, translateTerm } from '../utils/translators';
 import { useSmartDescription } from '../services/translatorService';
 
@@ -37,20 +38,18 @@ const formatCastingTime = (ct, reactionCond, lang) => {
     return base;
 };
 
-const formatRange = (rangeText, rangeNum, lang) => {
+const formatRange = (rangeText, rangeNum, lang, unitSystem = 'm') => {
     const raw = safeText(rangeText || (rangeNum ? `${rangeNum} feet` : 'Self')).trim();
-    if (lang !== 'pt') return raw;
-    return raw
-        .replace(/^Self$/i, 'Pessoal')
-        .replace(/^Touch$/i, 'Toque')
-        .replace(/^Sight$/i, 'Visão')
-        .replace(/^Unlimited$/i, 'Ilimitado')
-        .replace(/^Special$/i, 'Especial')
-        .replace(/(\d+)\s*(?:feet|ft\.?)/gi, (_, ft) => {
-            const meters = Math.round((parseInt(ft, 10) / 5) * 1.5 * 10) / 10;
-            return `${ft} ft. (${meters}m)`;
-        })
-        .replace(/(\d+)\s*miles?/gi, '$1 milha(s)');
+    const base = lang === 'pt'
+        ? raw
+            .replace(/^Self$/i, 'Pessoal')
+            .replace(/^Touch$/i, 'Toque')
+            .replace(/^Sight$/i, 'Visão')
+            .replace(/^Unlimited$/i, 'Ilimitado')
+            .replace(/^Special$/i, 'Especial')
+            .replace(/(\d+)\s*miles?/gi, '$1 milha(s)')
+        : raw;
+    return formatDistanceUnits(base, unitSystem);
 };
 
 const formatDuration = (duration, concentration, lang) => {
@@ -91,6 +90,7 @@ const formatComponents = (spell) => {
 };
 
 export const SpellDetailsCard = ({ spell, lang, t }) => {
+    const { unitSystem = 'm' } = useAppContext() || {};
     const rawDesc = safeText(spell.desc);
     const rawHigher = safeText(spell.higher_level);
     const { text: translatedDesc, isNeural } = useSmartDescription(rawDesc, lang);
@@ -157,7 +157,7 @@ export const SpellDetailsCard = ({ spell, lang, t }) => {
                         <Compass size={11} /> {t.range}
                     </span>
                     <p className="text-white font-semibold mt-0.5">
-                        {formatRange(spell.range_text, spell.range, lang)}
+                        {formatRange(spell.range_text, spell.range, lang, unitSystem)}
                     </p>
                 </div>
                 <div>
@@ -196,7 +196,7 @@ export const SpellDetailsCard = ({ spell, lang, t }) => {
             {/* Spell Description */}
             {translatedDesc && (
                 <div className="whitespace-pre-wrap leading-relaxed text-gray-300 text-xs">
-                    {translatedDesc.replace(/\*\*/g, '')}
+                    {formatDistanceUnits(translatedDesc.replace(/\*\*/g, ''), unitSystem)}
                 </div>
             )}
 
@@ -206,7 +206,7 @@ export const SpellDetailsCard = ({ spell, lang, t }) => {
                     <span className="font-bold text-[#FF1457] block mb-0.5">
                         {t.higherLevels}:
                     </span>
-                    {translatedHigher.replace(/\*\*/g, '')}
+                    {formatDistanceUnits(translatedHigher.replace(/\*\*/g, ''), unitSystem)}
                 </div>
             )}
         </div>

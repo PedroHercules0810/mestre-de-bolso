@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Search, BookOpen } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { formatDistanceUnits } from '../utils/helpers';
 import { REFERENCE_DATA } from '../constants/referenceData';
 
 export const DMScreenTab = () => {
-    const { lang, t } = useAppContext();
+    const { lang, unitSystem = 'm', t } = useAppContext();
     const [searchTerm, setSearchTerm] = useState("");
 
     const data = REFERENCE_DATA[lang] || REFERENCE_DATA['en'];
@@ -44,7 +45,7 @@ export const DMScreenTab = () => {
                                 {category.items.map((item, i) => (
                                     <div key={i} className="bg-[#2B2C30] p-3 rounded-xl border border-[#453745]">
                                         <h4 className="font-bold text-white text-sm mb-1">{item.name}</h4>
-                                        <p className="text-gray-400 text-xs leading-relaxed">{item.desc}</p>
+                                        <p className="text-gray-400 text-xs leading-relaxed">{formatDistanceUnits(item.desc, unitSystem)}</p>
                                     </div>
                                 ))}
                             </div>

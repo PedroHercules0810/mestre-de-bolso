@@ -60,6 +60,56 @@ export const generateHomebrewSlug = (prefix, cleanName) => {
     return `${safePrefix}-${safeSlug}-${Date.now()}`;
 };
 
+export const feetToMetersStr = (ftVal) => {
+    const ft = parseFloat(ftVal);
+    if (!Number.isFinite(ft)) return String(ftVal);
+    const meters = Math.round((ft / 5) * 1.5 * 10) / 10;
+    return `${String(meters).replace('.', ',')}m`;
+};
+
+export const formatDistanceUnits = (text, unitSystem = 'm') => {
+    if (!text || typeof text !== 'string') return text || '';
+    let out = text;
+
+    if (unitSystem === 'm') {
+        // 1. Converte formatos combinados "30 ft. (9m)" ou "15 ft. (4.5m)" -> "9m" / "4,5m"
+        out = out.replace(/(\d+)\s*(?:ft\.?|feet)\s*\((\d+(?:[.,]\d+)?)\s*m\)/gi, (_, _ft, m) => `${m.replace('.', ',')}m`);
+        // 2. Converte formatos combinados invertidos "9 metros (30 ft.)" ou "+4,5m (15 ft.)" -> "9m" / "+4,5m"
+        out = out.replace(/([+-]?\d+(?:[.,]\d+)?)\s*(?:metros?|m)\s*\(\d+\s*(?:ft\.?|feet)\)/gi, (_, m) => `${m.replace('.', ',')}m`);
+        // 3. Converte alcances duplos "80/320 ft." -> "24/96m"
+        out = out.replace(/\b(\d+)\/(\d+)\s*(?:feet\b|ft\.|ft\b)/gi, (_, n1, n2) => {
+            const m1 = Math.round((parseInt(n1, 10) / 5) * 1.5 * 10) / 10;
+            const m2 = Math.round((parseInt(n2, 10) / 5) * 1.5 * 10) / 10;
+            return `${String(m1).replace('.', ',')}/${String(m2).replace('.', ',')}m`;
+        });
+        // 4. Converte medidas simples em pés "30 ft.", "60 feet", "15-foot" -> "9m", "18m", "4,5m"
+        out = out.replace(/\b(\d+)\s*(?:-\s*foot|feet|ft\.)/gi, (_, ft) => feetToMetersStr(ft));
+        out = out.replace(/\b(\d+)\s*ft\b/gi, (_, ft) => feetToMetersStr(ft));
+        return out;
+    }
+
+    // Caso unitSystem === 'ft' (Pés):
+    // 1. Converte formatos combinados "30 ft. (9m)" -> "30 ft."
+    out = out.replace(/(\d+)\s*(?:ft\.?|feet)\s*\(\d+(?:[.,]\d+)?\s*m\)/gi, '$1 ft.');
+    // 2. Converte formatos combinados invertidos "+4,5m (15 ft.)" ou "9 metros (30 ft.)" -> "+15 ft." / "30 ft."
+    out = out.replace(/([+-])?\d+(?:[.,]\d+)?\s*(?:metros?|m)\s*\((\d+)\s*(?:ft\.?|feet)\)/gi, (_, sign, ft) => `${sign || ''}${ft} ft.`);
+    // 3. Converte alcances duplos em metros "24/96m" -> "80/320 ft."
+    out = out.replace(/\b(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)\s*m\b/gi, (_, m1, m2) => {
+        const f1 = Math.round((parseFloat(m1.replace(',', '.')) / 1.5) * 5);
+        const f2 = Math.round((parseFloat(m2.replace(',', '.')) / 1.5) * 5);
+        return `${f1}/${f2} ft.`;
+    });
+    // 4. Converte medidas em metros "1,5m", "4,5m", "9m", "18m", "9 metros" -> "5 ft.", "15 ft.", "30 ft.", "60 ft."
+    out = out.replace(/([+-]?\d+(?:[.,]\d+)?)\s*(?:metros?|m)\b/gi, (match, mStr) => {
+        const sign = mStr.startsWith('+') ? '+' : mStr.startsWith('-') ? '-' : '';
+        const val = Math.abs(parseFloat(mStr.replace(',', '.')));
+        if (!Number.isFinite(val) || val === 0) return match;
+        const ft = Math.round((val / 1.5) * 5);
+        return `${sign}${ft} ft.`;
+    });
+    return out;
+};
+
 export const getDeepStat = (monster, statName) => {
     if (!monster || typeof monster !== 'object' || !statName) return null;
     const cleanStat = String(statName);
